@@ -3,810 +3,761 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ostaaz Online Academy | أكاديمية أستاذ أونلاين</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Academy Scheduler — أستاذ أونلاين</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== BASIC STYLES (RTL + LTR supported) ====== */
+    :root{
+      --bg:#f4f6f8; --card:#fff; --accent:#0b66ff; --success:#16a34a; --warning:#f59e0b; --danger:#ef4444;
+      --muted:#6b7280; --glass: rgba(255,255,255,0.85);
+    }
+    html[lang="en"]{ direction:ltr; }
+    html[lang="ar"]{ direction:rtl; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", "Cairo", sans-serif;
+      background: linear-gradient(180deg,#eaf2ff 0%, var(--bg) 45%);
+      color:#0f172a; -webkit-font-smoothing:antialiased;
+    }
+    .app {
+      max-width:1100px; margin:32px auto; padding:20px;
+    }
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:18px;
+    }
+    .brand { display:flex; gap:12px; align-items:center; }
+    .logo {
+      width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6d28d9);
+      display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;
+    }
+    .title { font-size:20px; font-weight:700; }
+    .sub { color:var(--muted); font-size:13px; }
+
+    .controls { display:flex; gap:8px; align-items:center; }
+
+    button, .btn {
+      background:var(--accent); color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700;
+    }
+    .btn.secondary { background:#334155; }
+    .btn.ghost { background:transparent; color:var(--muted); border:1px solid rgba(15,23,42,0.06) }
+
+    /* layout */
+    .grid { display:grid; gap:16px; grid-template-columns: 320px 1fr; }
+    @media (max-width:900px){ .grid{ grid-template-columns: 1fr; } header{flex-direction:column;align-items:flex-start} }
+
+    /* left panel (filters/user) */
+    .panel { background:var(--card); border-radius:12px; padding:16px; box-shadow:0 6px 18px rgba(2,6,23,0.06); }
+    .section-title { font-weight:700; margin-bottom:8px; }
+    label{display:block;font-size:13px;color:var(--muted); margin-bottom:6px}
+    select,input[type="text"],input[type="date"]{
+      width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:14px;margin-bottom:10px;
+      background:transparent;
+    }
+    .filters { display:flex; flex-direction:column; gap:8px; }
+
+    /* teacher list card */
+    .teacher {
+      display:flex; gap:12px; align-items:center; padding:10px; border-radius:10px; background:linear-gradient(180deg,#fff,#fbfdff);
+      border:1px solid #eef2ff; margin-bottom:10px;
+    }
+    .avatar { width:56px;height:56px;border-radius:10px;background:#eef2ff; display:flex;align-items:center;justify-content:center;font-weight:800; color:#0b66ff}
+    .t-info { flex:1 }
+    .t-name { font-weight:700; }
+    .t-meta { font-size:13px;color:var(--muted) }
+    .rating { font-weight:700;color:var(--accent); }
+
+    .teacher .actions { display:flex; gap:8px; }
+
+    /* main area: schedule, charts, table */
+    .main-grid { display:grid; gap:12px; grid-template-columns: 1fr; }
+    .cards { display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+    .card { background:var(--card); padding:14px; border-radius:10px; box-shadow:0 6px 18px rgba(2,6,23,0.04); min-width:160px; flex:1; }
+    .metric { font-size:22px; font-weight:800; }
+    .small { font-size:13px; color:var(--muted) }
+
+    /* availability grid */
+    .availability { display:grid; grid-template-columns: repeat(7,1fr); gap:6px; }
+    .slot { background:#fff; padding:8px; border-radius:8px; border:1px dashed #e6eefc; font-size:13px; text-align:center; cursor:pointer; }
+    .slot.taken { background:#f8fafc; color:var(--muted); cursor:not-allowed; opacity:0.7 }
+    .slot.selected { background:linear-gradient(90deg,var(--accent),#6d28d9); color:#fff; border:0; }
+
+    /* bookings table */
+    table { width:100%; border-collapse:collapse; background:var(--card); border-radius:10px; overflow:hidden; box-shadow:0 6px 20px rgba(2,6,23,0.04) }
+    th,td { padding:10px; text-align:center; border-bottom:1px solid #f1f5f9; font-size:14px; }
+    th { background:linear-gradient(90deg,#f8fafc,#fff); color:var(--muted); font-weight:700; }
+
+    .tiny { font-size:12px;color:var(--muted) }
+
+    /* badges */
+    .badge { padding:6px 8px; border-radius:999px; background:#eef2ff; color:var(--accent); font-weight:700; font-size:13px; display:inline-block; }
+    .badge.green{ background:rgba(16,163,127,0.12); color:var(--success) }
+    .badge.red{ background:rgba(239,68,68,0.08); color:var(--danger) }
+
+    /* language toggle */
+    .lang-toggle { display:flex; gap:6px; align-items:center; }
+    .lang-toggle button{ padding:6px 8px; border-radius:8px; font-weight:700 }
+
+    /* small helpers */
+    .muted { color:var(--muted) }
+    .flex { display:flex; gap:8px; align-items:center }
+    .center { text-align:center }
+    .mt8{ margin-top:8px } .mb8{ margin-bottom:8px }
+
+    footer{ text-align:center; margin-top:18px; color:var(--muted); font-size:13px }
+  </style>
 </head>
+
 <body>
-  <div id="app" class="app">
-    <header class="topbar">
+  <div class="app" id="app">
+    <header>
       <div class="brand">
-        <div class="logo">OA</div>
-        <div class="brand-text">
-          <div class="name">Ostaaz Online Academy | أكاديمية أستاذ أونلاين</div>
-          <div class="tagline" id="ui_tagline">منصة دروس خصوصية - تجربة تجريبية</div>
+        <div class="logo">A</div>
+        <div>
+          <div class="title" id="ui_title">أكاديمية أستاذ أونلاين</div>
+          <div class="sub" id="ui_sub">حجز دروس خصوصية بسهولة — تجربة تجريبية</div>
         </div>
       </div>
 
-      <div class="top-actions">
-        <div class="lang-switch">
-          <button id="btn_ar" class="lang-btn">عربي</button>
-          <button id="btn_en" class="lang-btn">EN</button>
+      <div class="controls">
+        <div class="lang-toggle" aria-hidden>
+          <button id="btn_ar" class="btn ghost">عربي</button>
+          <button id="btn_en" class="btn ghost">EN</button>
         </div>
-
-        <select id="roleSwitch" class="role-select" title="Choose role">
-          <option value="student">طالب / Student</option>
-          <option value="parent">ولي أمر / Parent</option>
-          <option value="teacher">مدرس / Teacher</option>
+        <select id="roleSelect" style="padding:8px;border-radius:8px">
+          <option value="student">طالب</option>
+          <option value="parent">ولي أمر</option>
+          <option value="teacher">مدرس</option>
           <option value="admin">Admin</option>
         </select>
-
-        <button id="btnExport" class="btn ghost">Export JSON</button>
-        <input id="fileImport" type="file" accept=".json" style="display:none"/>
-        <button id="btnImport" class="btn ghost">Import</button>
+        <button id="demoFill" class="btn secondary">Load Demo</button>
+        <button id="exportBtn" class="btn">Export Data</button>
       </div>
     </header>
 
-    <main class="container">
-      <!-- LEFT: Filters & Teachers -->
-      <aside class="sidebar">
-        <section class="panel">
-          <h3 id="ui_filters">Student & Filters</h3>
-          <div class="form-row">
-            <label id="lbl_grade">Grade / Year</label>
+    <div class="grid">
+      <!-- LEFT PANEL: filters + teachers -->
+      <aside>
+        <div class="panel">
+          <div class="section-title" id="ui_filters_title">علومات الطالب و الفلاتر</div>
+
+          <div class="filters">
+            <label id="ui_label_grade">الصف الدراسي / Year</label>
             <select id="gradeSelect">
               <option value="1">Year 1</option>
               <option value="2">Year 2</option>
               <option value="3">Year 3</option>
               <option value="4">Year 4</option>
             </select>
-          </div>
 
-          <div class="form-row">
-            <label id="lbl_subject">Subject</label>
-            <select id="subjectSelect">
-              <option value="Math">Math</option>
-              <option value="Physics">Physics</option>
-              <option value="Chemistry">Chemistry</option>
-              <option value="Biology">Biology</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label id="lbl_gender">Preferred teacher gender</label>
-            <select id="genderSelect">
+            <label id="ui_label_gender">Preferred teacher gender</label>
+            <select id="genderPref">
               <option value="">Any</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
-          </div>
 
-          <div class="form-row">
-            <label id="lbl_search">Search</label>
-            <input id="searchInput" placeholder="Search by teacher or subject"/>
-          </div>
+            <label id="ui_label_search">Search student / teacher</label>
+            <input id="searchBox" type="text" placeholder="Search by name..." />
 
-          <div class="form-row actions-row">
-            <button id="btnApply" class="btn">Apply</button>
-            <button id="btnClear" class="btn ghost">Clear</button>
-            <button id="btnDemo" class="btn secondary">Load Demo</button>
-          </div>
-        </section>
+            <label id="ui_label_status">Status (show)</label>
+            <select id="statusFilter">
+              <option value="">All</option>
+              <option value="Completed">Completed</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Pending">Pending</option>
+            </select>
 
-        <section class="panel">
-          <h3 id="ui_teachers">Available Teachers</h3>
-          <div id="teachersList" class="list"></div>
-        </section>
-
-        <section class="panel">
-          <h3 id="ui_notifs">Notifications</h3>
-          <div id="notifList" class="tiny muted log"></div>
-        </section>
-      </aside>
-
-      <!-- RIGHT: Main area -->
-      <section class="main">
-        <!-- Metrics -->
-        <div class="metrics">
-          <div class="metric card">
-            <div class="metric-title" id="ui_metric_students">Students</div>
-            <div class="metric-value" id="metricStudents">0</div>
-          </div>
-          <div class="metric card">
-            <div class="metric-title" id="ui_metric_bookings">Bookings</div>
-            <div class="metric-value" id="metricBookings">0</div>
-          </div>
-          <div class="metric card">
-            <div class="metric-title" id="ui_metric_revenue">Revenue</div>
-            <div class="metric-value" id="metricRevenue">0</div>
+            <div class="mt8 center">
+              <button id="applyFilters" class="btn">Apply Filters</button>
+              <button id="clearFilters" class="btn ghost">Clear</button>
+            </div>
           </div>
         </div>
 
-        <!-- Selected Teacher / Availability -->
-        <div class="panel">
-          <div class="panel-header">
-            <h3 id="ui_selected">Selected Teacher</h3>
-            <div class="panel-actions">
-              <button id="btnFav" class="btn ghost">★ Favorite</button>
+        <div class="panel mt8">
+          <div class="section-title" id="ui_teachers">Available Teachers</div>
+          <div id="teachersList" style="margin-top:8px; max-height:420px; overflow:auto"></div>
+        </div>
+
+        <div class="panel mt8">
+          <div class="section-title" id="ui_notifications">Notifications Log</div>
+          <div id="notifLog" style="margin-top:8px; max-height:160px; overflow:auto; font-size:13px" class="tiny muted"></div>
+        </div>
+      </aside>
+
+      <!-- RIGHT (main) -->
+      <main>
+        <div class="main-grid">
+          <!-- top metrics -->
+          <div class="cards">
+            <div class="card">
+              <div class="small" id="ui_metric_students">Students</div>
+              <div class="metric" id="metric_students">0</div>
+              <div class="tiny muted">Total registered students</div>
+            </div>
+            <div class="card">
+              <div class="small" id="ui_metric_bookings">Bookings</div>
+              <div class="metric" id="metric_bookings">0</div>
+              <div class="tiny muted">Active bookings</div>
+            </div>
+            <div class="card">
+              <div class="small" id="ui_metric_revenue">Revenue</div>
+              <div class="metric" id="metric_revenue">0</div>
+              <div class="tiny muted">Experimental currency</div>
             </div>
           </div>
 
-          <div id="selectedCard" class="selected-card">
-            <div id="selName" class="sel-name">—</div>
-            <div id="selMeta" class="sel-meta small muted">—</div>
-            <div id="selDesc" class="small muted" style="margin-top:6px;">—</div>
+          <!-- teacher profile + availability -->
+          <div class="card" id="teacherProfileCard">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="section-title" id="ui_selected_teacher">Selected Teacher</div>
+                <div id="selectedTeacherName" class="t-name">—</div>
+                <div id="selectedTeacherMeta" class="t-meta tiny">—</div>
+              </div>
+              <div class="flex">
+                <button id="bookBtn" class="btn">Book Selected</button>
+                <button id="favBtn" class="btn ghost">Favourite</button>
+              </div>
+            </div>
 
-            <hr />
+            <hr style="margin:12px 0">
 
-            <div id="availabilityArea">
-              <div class="small muted" id="ui_avail">Availability (pick slots)</div>
-              <div id="availabilityGrid" class="availability-grid"></div>
-              <div style="margin-top:12px">
-                <button id="btnConfirm" class="btn">Confirm selection</button>
+            <div>
+              <div class="small" id="ui_avail_title">Availability (pick slots)</div>
+              <div class="availability mt8" id="availabilityGrid">
+                <!-- generated slots -->
+              </div>
+              <div class="mt8 center">
+                <button id="confirmSlots" class="btn">Confirm Selection</button>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Bookings table -->
-        <div class="panel">
-          <h3 id="ui_bookings">Bookings / Schedule</h3>
-          <div class="table-wrap">
-            <table id="bookingsTable">
-              <thead>
-                <tr>
-                  <th id="th_student">Student</th>
-                  <th id="th_teacher">Teacher</th>
-                  <th id="th_when">When</th>
-                  <th id="th_duration">Duration</th>
-                  <th id="th_status">Status</th>
-                  <th id="th_zoom">Zoom</th>
-                  <th id="th_attend">Attend</th>
-                </tr>
-              </thead>
-              <tbody id="bookingsBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Bottom: summaries and teacher controls -->
-        <div class="panel flex-between">
-          <div>
-            <h4 id="ui_summary">Monthly Summary</h4>
-            <div class="small muted">
-              Attended: <strong id="sum_attended">0</strong> • Missed: <strong id="sum_missed">0</strong> • Total: <strong id="sum_total">0</strong>
+          <!-- bookings calendar/table -->
+          <div class="card">
+            <div class="section-title" id="ui_bookings">My Bookings / Schedule</div>
+            <div style="margin-top:8px; overflow:auto; max-height:320px">
+              <table id="bookingsTable">
+                <thead><tr><th>Student</th><th>Teacher</th><th>When</th><th>Duration</th><th>Status</th><th>Zoom</th><th>Attend</th></tr></thead>
+                <tbody id="bookingsBody"></tbody>
+              </table>
             </div>
           </div>
 
-          <div id="teacherControls" class="teacher-controls">
-            <h4 id="ui_teacher_controls">Teacher Controls</h4>
-            <label>Hourly rate</label>
-            <input id="teacherRate" placeholder="e.g. 30"/>
-            <label>Availability (e.g. Mon:09-12,Wed:15-18)</label>
-            <input id="teacherAvail" placeholder="Mon:09-12,Wed:15-18"/>
-            <div style="margin-top:8px">
-              <button id="saveTeacher" class="btn">Save</button>
-              <button id="clearTeacher" class="btn ghost">Clear</button>
+          <!-- monthly summary & teacher controls -->
+          <div class="card" id="bottomPanel">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+              <div style="flex:1; min-width:220px">
+                <div class="section-title" id="ui_summary">Monthly Summary</div>
+                <div class="tiny muted">Attendances / Charges</div>
+                <div style="margin-top:8px">
+                  <div>Attended: <strong id="summary_attended">0</strong></div>
+                  <div>Missed: <strong id="summary_missed">0</strong></div>
+                  <div>Total due: <strong id="summary_total">0</strong></div>
+                </div>
+              </div>
+
+              <div style="flex:1; min-width:260px">
+                <div class="section-title" id="ui_teacher_ctrl">Teacher Controls (for teacher role)</div>
+                <label>Set default hourly rate</label>
+                <input id="teacherRate" type="text" placeholder="e.g. 30" />
+                <label>Set weekly availability (example: Mon 09:00-12:00, Wed 15:00-18:00)</label>
+                <input id="teacherAvailInput" type="text" placeholder="e.g. Mon:09-12,Wed:15-18" />
+                <div class="mt8 flex">
+                  <button id="saveTeacherSettings" class="btn">Save</button>
+                  <button id="clearTeacherSettings" class="btn ghost">Clear</button>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
+      </main>
+    </div>
 
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div>© <span id="ui_footer">Ostaaz Online Academy | أكاديمية أستاذ أونلاين</span> — Demo</div>
-      <div class="footer-actions">
-        <button id="btnExportSmall" class="btn ghost">Export</button>
-      </div>
+    <footer>
+      <div id="ui_footer">Built with ❤️ — Demo only. Data stored locally.</div>
     </footer>
   </div>
 
-  <script src="script.js"></script>
-</body>
-</html>
-:root{
-  --bg:#f4f6f9; --card:#fff; --accent:#0b66ff; --accent-dark:#054bb8;
-  --muted:#6b7280; --success:#16a34a; --danger:#ef4444;
-  --glass: rgba(255,255,255,0.85);
-}
-*{box-sizing:border-box}
-html[lang="ar"]{ direction:rtl }
-html[lang="en"]{ direction:ltr }
-body{
-  margin:0; font-family:Inter, "Segoe UI", Tahoma, Roboto, "Noto Sans", sans-serif;
-  background:linear-gradient(180deg,#eef6ff, var(--bg));
-  color:#0f172a;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
-.app{ max-width:1200px; margin:20px auto; padding:12px; }
+  <!-- ========== JavaScript: app logic (all front-end, uses localStorage) ========== -->
+  <script>
+  /**********************************************
+   * Academy Scheduler - client-only demo
+   * Features:
+   * - Demo data for students/teachers
+   * - Filter by grade & teacher gender
+   * - Select teacher, view availability, pick slots
+   * - Bookings stored in localStorage, Zoom links generated
+   * - Attendance marking, monthly summary
+   * - Language toggle (Arabic / English)
+   ***********************************************/
 
-/* topbar */
-.topbar{
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-  background:var(--card); padding:12px 16px; border-radius:12px; box-shadow:0 6px 18px rgba(2,6,23,0.06);
-}
-.brand{ display:flex; gap:12px; align-items:center; }
-.logo{ width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6d28d9);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800 }
-.brand-text .name{ font-weight:800 }
-.top-actions{ display:flex;align-items:center; gap:8px }
-.lang-btn{ background:transparent;border:1px solid rgba(15,23,42,0.06); padding:6px 8px; border-radius:8px; cursor:pointer }
-.role-select{ padding:6px 8px;border-radius:8px;border:1px solid #e6e9ef }
+  (function(){
+    // ---------- TRANSLATIONS ----------
+    const TEXT = {
+      ar: {
+        appTitle: "أكاديمية أستاذ أونلاين",
+        appSub: "حجز دروس خصوصية بسهولة — تجربة تجريبية",
+        filtersTitle: "معلومات الطالب و الفلاتر",
+        label_grade: "الصف الدراسي / Year",
+        label_gender: "تفضيل جنس المدرس",
+        label_search: "بحث",
+        label_status: "الحالة",
+        teachers: "المدرسين المتاحين",
+        notifications: "سجل الإشعارات",
+        metric_students: "الطلاب",
+        metric_bookings: "الحجوزات",
+        metric_revenue: "الإيرادات",
+        selected_teacher: "المدرس المختار",
+        avail_title: "التوفر (اختر المواعيد)",
+        bookings: "جدول الحصص",
+        summary: "ملخص شهري",
+        teacher_ctrl: "إعدادات المدرّس",
+        save: "حفظ",
+        clear: "مسح",
+        bookSelected: "احجز المختار",
+        confirmSelection: "تأكيد",
+        loadingData: "Loading data..."
+      },
+      en: {
+        appTitle: "Ustadh Online Academy",
+        appSub: "Private lessons booking — Demo",
+        filtersTitle: "Student info & Filters",
+        label_grade: "Grade / Year",
+        label_gender: "Preferred teacher gender",
+        label_search: "Search",
+        label_status: "Status",
+        teachers: "Available Teachers",
+        notifications: "Notifications Log",
+        metric_students: "Students",
+        metric_bookings: "Bookings",
+        metric_revenue: "Revenue",
+        selected_teacher: "Selected Teacher",
+        avail_title: "Availability (pick slots)",
+        bookings: "Bookings / Schedule",
+        summary: "Monthly Summary",
+        teacher_ctrl: "Teacher Controls",
+        save: "Save",
+        clear: "Clear",
+        bookSelected: "Book Selected",
+        confirmSelection: "Confirm",
+        loadingData: "Loading data..."
+      }
+    };
 
-/* layout */
-.container{ display:grid; grid-template-columns:320px 1fr; gap:16px; margin-top:16px }
-@media (max-width:980px){ .container{ grid-template-columns: 1fr; } .sidebar{ order:2 } .main{ order:1 } }
+    // Current language (defaults to Arabic)
+    let LANG = localStorage.getItem('academy_lang') || 'ar';
+    document.documentElement.lang = LANG === 'ar' ? 'ar' : 'en';
+    // ---------- Demo data (initial) ----------
+    const demoTeachers = [
+      { id: 't1', name: 'Dr. Sarah Abdullah', gender:'female', subjects:['Math','Physics'], rating:4.9, reviews: ['Very patient','Great explanation'], rate:30, avail: 'Mon:09-12,Wed:15-18' },
+      { id: 't2', name: 'Mohammed Hassan', gender:'male', subjects:['Chemistry'], rating:4.6, reviews:['Explains well'], rate:25, avail: 'Tue:10-13,Thu:16-19' },
+      { id: 't3', name: 'Aisha Al Saleh', gender:'female', subjects:['Biology','Chemistry'], rating:4.8, reviews:['Amazing'], rate:35, avail: 'Mon:14-17,Fri:09-12' },
+      { id: 't4', name: 'Khalid Omar', gender:'male', subjects:['Math'], rating:4.4, reviews:['Good tutor'], rate:20, avail: 'Wed:09-11,Sat:10-13' },
+    ];
 
-/* sidebar */
-.sidebar .panel{ background:var(--card); padding:12px; border-radius:10px; box-shadow:0 6px 18px rgba(2,6,23,0.04); margin-bottom:12px }
-.form-row{ margin-bottom:8px }
-.form-row label{ display:block; font-weight:700; color:var(--muted); margin-bottom:6px }
-.form-row input, .form-row select{ width:100%; padding:8px;border-radius:8px;border:1px solid #e6e9ef }
-
-/* teachers list */
-.list{ max-height:360px; overflow:auto }
-.teacher-item{ display:flex; gap:10px; align-items:center; padding:8px; border-radius:8px; border:1px solid #eef2ff; background:linear-gradient(180deg,#fff,#fbfdff); margin-bottom:8px }
-.avatar{ width:44px;height:44px;border-radius:8px;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent) }
-.teacher-info .name{ font-weight:700 }
-.teacher-meta{ color:var(--muted); font-size:13px }
-
-/* main area */
-.main .metrics{ display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap }
-.metric{ flex:1; min-width:160px; padding:12px; border-radius:10px; background:var(--card); box-shadow:0 6px 18px rgba(2,6,23,0.04) }
-.metric-title{ color:var(--muted); font-weight:700; font-size:13px }
-.metric-value{ font-size:20px; font-weight:800; margin-top:6px }
-
-/* selected card and availability */
-.selected-card{ padding:12px; border-radius:8px; background:var(--card) }
-.sel-name{ font-weight:900; font-size:18px }
-.sel-meta{ color:var(--muted) }
-
-.availability-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-top:8px }
-.slot{ padding:8px; border-radius:8px; border:1px dashed #e6eefc; text-align:center; cursor:pointer; background:#fff }
-.slot.taken{ opacity:0.6; cursor:not-allowed }
-.slot.selected{ background:linear-gradient(90deg,var(--accent),var(--accent-dark)); color:#fff; border:0 }
-
-/* table */
-.table-wrap{ overflow:auto; max-height:320px }
-table{ width:100%; border-collapse:collapse; background:var(--card); border-radius:8px; overflow:hidden }
-th, td{ padding:8px 10px; text-align:center; border-bottom:1px solid #f1f5f9 }
-th{ background:linear-gradient(90deg,#f8fafc,#fff); color:var(--muted); font-weight:800 }
-
-/* panels */
-.panel{ background:var(--card); padding:12px; border-radius:10px; box-shadow:0 6px 18px rgba(2,6,23,0.04); margin-bottom:12px }
-.panel-header{ display:flex; align-items:center; justify-content:space-between }
-
-/* bottom/footer */
-.footer{ margin-top:14px; padding:12px; display:flex; justify-content:space-between; color:var(--muted) }
-
-/* buttons */
-.btn{ background:var(--accent); color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700 }
-.btn.secondary{ background:#2563eb }
-.btn.ghost{ background:transparent; color:var(--muted); border:1px solid rgba(2,6,23,0.06) }
-
-/* small helpers */
-.small{ font-size:13px }
-.muted{ color:var(--muted) }
-.log{ max-height:160px; overflow:auto }
-.flex-between{ display:flex; justify-content:space-between; align-items:center }
-
-/* responsive tweaks */
-@media (max-width:640px){
-  .availability-grid{ grid-template-columns: repeat(4, 1fr) }
-  .logo{ width:44px;height:44px }
-  .brand-text .name{ font-size:14px }
-}
-/**
- * Ostaaz Online Academy - Frontend-only demo
- * - Local data in localStorage
- * - Roles: student / parent / teacher / admin
- * - Bilingual (ar / en)
- * - Bookings with fake Zoom links, attendance, notifications (simulated)
- *
- * NOTE: If you merge this with existing HTML you already have, avoid duplicating IDs.
- */
-
-(function(){
-  // ---------- Translations ----------
-  const TEXT = {
-    ar: {
-      tagline: "منصة دروس خصوصية - تجربة تجريبية",
-      filtersTitle: "معلومات الطالب و الفلاتر",
-      teachersTitle: "المدرسين المتاحين",
-      notifsTitle: "الإشعارات",
-      availTitle: "التوفر (اختر مواعيد)",
-      selectedTeacher: "المدرس المختار",
-      bookingsTitle: "الحجوزات / الجدول",
-      summaryTitle: "ملخص شهري",
-      teacherControls: "أدوات المدرس",
-      btnApply: "تطبيق",
-      btnClear: "مسح",
-      btnDemo: "تحميل مثال",
-      btnSave: "حفظ",
-      btnConfirm: "تأكيد الاختيار",
-      noTeachers: "لا يوجد مدرسين مطابقين",
-      joinText: "انضم"
-    },
-    en: {
-      tagline: "Private lessons platform - Demo",
-      filtersTitle: "Student & Filters",
-      teachersTitle: "Available Teachers",
-      notifsTitle: "Notifications",
-      availTitle: "Availability (pick slots)",
-      selectedTeacher: "Selected Teacher",
-      bookingsTitle: "Bookings / Schedule",
-      summaryTitle: "Monthly Summary",
-      teacherControls: "Teacher Controls",
-      btnApply: "Apply",
-      btnClear: "Clear",
-      btnDemo: "Load Demo",
-      btnSave: "Save",
-      btnConfirm: "Confirm selection",
-      noTeachers: "No matching teachers",
-      joinText: "Join"
-    }
-  };
-
-  // current language
-  let LANG = localStorage.getItem('ost_lang') || 'ar';
-  document.documentElement.lang = LANG === 'ar' ? 'ar' : 'en';
-
-  // ---------- Demo data ----------
-  const DEMO = {
-    teachers: [
-      { id:'t1', name_ar:'د. سارة عبدالله', name_en:'Dr. Sarah Abdullah', gender:'female', subjects:['Math','Physics'], rating:4.9, reviews: ['Patient','Clear explanations'], rate:35, avail:'Mon:09-12,Wed:15-18' },
-      { id:'t2', name_ar:'أ. محمد حسن', name_en:'Mohammed Hassan', gender:'male', subjects:['Chemistry'], rating:4.6, reviews:['Explains well'], rate:30, avail:'Tue:10-13,Thu:16-19' },
-      { id:'t3', name_ar:'أ. عائشة صالح', name_en:'Aisha Al Saleh', gender:'female', subjects:['Biology','Chemistry'], rating:4.8, reviews:['Very helpful'], rate:40, avail:'Mon:14-17,Fri:09-12' }
-    ],
-    students: [
+    const demoStudents = [
       { id:'s1', name:'Ali bin Ahmed', grade:2, parent:'Parent A' },
       { id:'s2', name:'Sara bint Naim', grade:3, parent:'Parent B' }
-    ],
-    bookings: [],
-    notifs: []
-  };
+    ];
 
-  // ---------- localStorage keys ----------
-  const LS = {
-    teachers: 'ost_teachers',
-    students: 'ost_students',
-    bookings: 'ost_bookings',
-    notifs: 'ost_notifs',
-    lang: 'ost_lang'
-  };
+    // localStorage keys
+    const LS_KEYS = { TEACHERS:'academy_teachers', STUDENTS:'academy_students', BOOKINGS:'academy_bookings', NOTIFS:'academy_notifs' };
 
-  // load or init
-  let teachers = load(LS.teachers, DEMO.teachers);
-  let students = load(LS.students, DEMO.students);
-  let bookings = load(LS.bookings, DEMO.bookings);
-  let notifs = load(LS.notifs, DEMO.notifs);
-
-  // UI elements
-  const el = id => document.getElementById(id);
-
-  // selected & state
-  let currentRole = 'student';
-  let selectedTeacherId = null;
-  let selectedSlots = []; // {teacherId, whenISO, duration, slotId}
-
-  // init on DOM ready
-  window.addEventListener('load', init);
-
-  // ---------- utility ----------
-  function uid(prefix='id'){ return prefix + Math.random().toString(36).slice(2,9); }
-  function save(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
-  function load(key, fallback){ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
-  function nowISO(){ return new Date().toISOString(); }
-  function formatDateISO(iso){
-    const d = new Date(iso);
-    return d.toLocaleString(LANG==='ar' ? 'ar-EG' : 'en-US', {year:'numeric',month:'short',day:'numeric', hour:'2-digit', minute:'2-digit'});
-  }
-
-  // ---------- init ----------
-  function init(){
-    // language buttons
-    el('btn_ar').addEventListener('click', ()=> setLang('ar'));
-    el('btn_en').addEventListener('click', ()=> setLang('en'));
-    setLang(LANG);
-
-    // role
-    el('roleSwitch').addEventListener('change', (e)=> { currentRole=e.target.value; renderAll(); });
-
-    // demo / apply / clear
-    el('btnApply').addEventListener('click', renderTeachers);
-    el('btnClear').addEventListener('click', clearFilters);
-    el('btnDemo').addEventListener('click', loadDemo);
-
-    // export/import
-    el('btnExport').addEventListener('click', exportData);
-    el('btnExportSmall').addEventListener('click', exportData);
-    el('btnImport').addEventListener('click', ()=> el('fileImport').click());
-    el('fileImport').addEventListener('change', importData);
-
-    // confirm selection
-    el('btnConfirm').addEventListener('click', confirmSelection);
-
-    // save teacher settings (teacher controls)
-    el('saveTeacher').addEventListener('click', saveTeacherSettings);
-    el('clearTeacher').addEventListener('click', ()=> { el('teacherRate').value=''; el('teacherAvail').value=''; });
-
-    // search input live
-    el('searchInput').addEventListener('input', throttle(renderTeachers,300));
-    el('gradeSelect').addEventListener('change', renderTeachers);
-    el('subjectSelect').addEventListener('change', renderTeachers);
-    el('genderSelect').addEventListener('change', renderTeachers);
-
-    // initial render
-    renderAll();
-
-    // notification checker - simulate reminders every 30s (for demo)
-    setInterval(checkUpcomingBookings, 30 * 1000);
-  }
-
-  // ---------- language ----------
-  function setLang(lang){
-    LANG = lang; localStorage.setItem(LS.lang, lang);
-    document.documentElement.lang = LANG==='ar' ? 'ar' : 'en';
-
-    // apply simple texts
-    el('ui_tagline').innerText = TEXT[LANG].tagline;
-    el('ui_teachers').innerText = TEXT[LANG].teachersTitle;
-    el('ui_notifs').innerText = TEXT[LANG].notifsTitle;
-    el('ui_avail').innerText = TEXT[LANG].availTitle;
-    el('ui_selected').innerText = TEXT[LANG].selectedTeacher;
-    el('ui_bookings').innerText = TEXT[LANG].bookingsTitle;
-    el('ui_summary').innerText = TEXT[LANG].summaryTitle;
-    el('ui_teacher_controls').innerText = TEXT[LANG].teacherControls;
-    el('btnDemo').innerText = TEXT[LANG].btnDemo;
-    el('btnApply').innerText = TEXT[LANG].btnApply;
-    el('btnClear').innerText = TEXT[LANG].btnClear;
-    el('btnConfirm').innerText = TEXT[LANG].btnConfirm;
-    el('saveTeacher').innerText = TEXT[LANG].btnSave;
-
-    // update student/subject selects for demo readability
-    if (LANG==='ar'){
-      // nothing major here - the select values remain (subject keys in English for logic)
+    // ---------- Utility helpers ----------
+    const $ = id => document.getElementById(id);
+    function uid(prefix='id'){ return prefix + Math.random().toString(36).slice(2,9); }
+    function saveLS(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
+    function loadLS(key, fallback){ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    function nowISO(){ return new Date().toISOString(); }
+    function formatDate(d){
+      const dt = new Date(d);
+      return dt.toLocaleString(LANG==='ar' ? 'ar-EG' : 'en-US', { year:'numeric',month:'short',day:'numeric', hour:'2-digit',minute:'2-digit' });
     }
 
-    renderAll();
-  }
+    // ---------- App state ----------
+    let teachers = loadLS(LS_KEYS.TEACHERS, demoTeachers);
+    let students = loadLS(LS_KEYS.STUDENTS, demoStudents);
+    let bookings = loadLS(LS_KEYS.BOOKINGS, []);
+    let notifs = loadLS(LS_KEYS.NOTIFS, []);
+    let currentRole = 'student';
+    let selectedTeacherId = null;
+    let selectedSlots = []; // {teacherId, datetime, duration, slotId}
 
-  // ---------- render all ----------
-  function renderAll(){
-    renderTeachers();
-    renderSelectedTeacher();
-    renderBookingsTable();
-    renderNotifs();
-    updateMetrics();
-    updateSummary();
-    updateTeacherControlsVisibility();
-  }
-
-  // ---------- filters ----------
-  function clearFilters(){
-    el('gradeSelect').value='1';
-    el('subjectSelect').value='Math';
-    el('genderSelect').value='';
-    el('searchInput').value='';
-    renderTeachers();
-  }
-
-  function loadDemo(){
-    teachers = DEMO.teachers.slice();
-    students = DEMO.students.slice();
-    bookings = DEMO.bookings.slice();
-    notifs = DEMO.notifs.slice();
-    save(LS.teachers, teachers); save(LS.students, students); save(LS.bookings, bookings); save(LS.notifs, notifs);
-    pushNotif(LANG==='ar' ? 'تم تحميل بيانات تجريبية' : 'Demo data loaded');
-    renderAll();
-  }
-
-  // ---------- teachers list ----------
-  function renderTeachers(){
-    const ct = el('teachersList'); ct.innerHTML = '';
-    const q = (el('searchInput').value||'').toLowerCase();
-    const gender = el('genderSelect').value;
-    const subject = el('subjectSelect').value;
-
-    const filtered = teachers.filter(t=>{
-      if (gender && t.gender !== gender) return false;
-      if (subject && !(t.subjects||[]).includes(subject)) return false;
-      if (q){
-        const name = (LANG==='ar' ? (t.name_ar||t.name_en) : t.name_en).toLowerCase();
-        if (!name.includes(q) && !(t.subjects||[]).join(' ').toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
-
-    if (!filtered.length){
-      ct.innerHTML = `<div class="muted small">${TEXT[LANG].noTeachers}</div>`;
-      return;
+    // ---------- Rendering UI strings by LANG ----------
+    function t(key){ return TEXT[LANG][key] || key; }
+    function applyTexts(){
+      $('ui_title').innerText = t('appTitle');
+      $('ui_sub').innerText = t('appSub');
+      $('ui_filters_title').innerText = t('filtersTitle');
+      $('ui_label_grade').innerText = t('label_grade');
+      $('ui_label_gender').innerText = t('label_gender');
+      $('ui_label_search').innerText = t('label_search');
+      $('ui_label_status').innerText = t('label_status');
+      $('ui_teachers').innerText = t('teachers');
+      $('ui_notifications').innerText = t('notifications');
+      $('ui_metric_students').innerText = t('metric_students');
+      $('ui_metric_bookings').innerText = t('metric_bookings');
+      $('ui_metric_revenue').innerText = t('metric_revenue');
+      $('ui_selected_teacher').innerText = t('selected_teacher');
+      $('ui_avail_title').innerText = t('avail_title');
+      $('ui_bookings').innerText = t('bookings');
+      $('ui_summary').innerText = t('summary');
+      $('ui_teacher_ctrl').innerText = t('teacher_ctrl');
+      $('saveTeacherSettings').innerText = t('save');
+      $('clearTeacherSettings').innerText = t('clear');
+      $('bookBtn').innerText = t('bookSelected');
+      $('confirmSlots').innerText = t('confirmSelection');
+      $('demoFill').innerText = LANG==='ar' ? 'تحميل مثال' : 'Load Demo';
+      $('exportBtn').innerText = LANG==='ar' ? 'تصدير البيانات' : 'Export Data';
     }
 
-    filtered.forEach(t=>{
-      const div = document.createElement('div'); div.className='teacher-item';
-      const displayName = LANG==='ar' ? (t.name_ar||t.name_en) : (t.name_en||t.name_ar);
-      div.innerHTML = `
-        <div class="avatar">${displayName.split(' ').slice(0,1)[0].slice(0,1)}</div>
-        <div class="teacher-info" style="flex:1">
-          <div class="name">${displayName}</div>
-          <div class="teacher-meta small muted">${(t.subjects||[]).join(' • ')} • ${t.rate} /hr • ⭐ ${t.rating}</div>
-        </div>
-        <div>
-          <button class="btn select-btn" data-id="${t.id}">${LANG==='ar' ? 'اختر' : 'Select'}</button>
-        </div>
-      `;
-      ct.appendChild(div);
-    });
+    // ---------- initialize UI ----------
+    function initUI(){
+      // lang buttons
+      $('btn_ar').addEventListener('click', ()=> setLang('ar'));
+      $('btn_en').addEventListener('click', ()=> setLang('en'));
 
-    // attach select handlers
-    ct.querySelectorAll('.select-btn').forEach(b=>{
-      b.addEventListener('click', e=>{
-        selectedTeacherId = e.target.dataset.id;
-        selectedSlots = [];
-        renderSelectedTeacher();
-        pushNotif(LANG==='ar' ? 'تم اختيار مدرس' : 'Teacher selected');
-      });
-    });
-  }
+      $('roleSelect').value = currentRole;
+      $('roleSelect').addEventListener('change', e => { currentRole = e.target.value; renderAll(); });
 
-  // ---------- selected teacher & availability ----------
-  function renderSelectedTeacher(){
-    const selName = el('selName'); const selMeta = el('selMeta'); const selDesc = el('selDesc');
-    if (!selectedTeacherId){ selName.innerText='—'; selMeta.innerText='—'; selDesc.innerText='—'; el('availabilityGrid').innerHTML=''; return; }
-    const t = teachers.find(x=>x.id===selectedTeacherId);
-    if (!t) return;
-    const displayName = LANG==='ar' ? (t.name_ar||t.name_en) : (t.name_en||t.name_ar);
-    selName.innerText = displayName;
-    selMeta.innerText = `${(t.subjects||[]).join(', ')} • ${t.rate} /hr • ⭐ ${t.rating}`;
-    selDesc.innerText = (t.reviews && t.reviews.length) ? (LANG==='ar' ? 'المراجعات: ' : 'Reviews: ') + t.reviews.join(' | ') : '';
-
-    renderAvailabilityGrid(t);
-  }
-
-  // parse availability "Mon:09-12,Wed:15-18"
-  function parseAvail(av){
-    const map = {};
-    if (!av) return map;
-    av.split(',').forEach(part=>{
-      const [day, hrs] = part.split(':').map(s=>s.trim());
-      if (!day || !hrs) return;
-      const [start,end] = hrs.split('-').map(n=>parseInt(n,10));
-      map[day.trim().slice(0,3)] = {start,end};
-    });
-    return map;
-  }
-
-  // generate next 7 days slots according to avail
-  function renderAvailabilityGrid(teacher){
-    const grid = el('availabilityGrid'); grid.innerHTML = '';
-    const now = new Date();
-    const availMap = parseAvail(teacher.avail || '');
-    for(let i=0;i<7;i++){
-      const day = new Date(now); day.setDate(now.getDate()+i);
-      const dayKey = day.toLocaleDateString('en-US',{weekday:'short'}); // Mon,Tue...
-      const column = document.createElement('div');
-      column.style.display='flex'; column.style.flexDirection='column'; column.style.gap='6px';
-
-      const header = document.createElement('div'); header.className='small muted'; header.style.textAlign='center';
-      header.innerText = `${day.toLocaleDateString(LANG==='ar'?'ar-EG':'en-US',{weekday:'short', day:'numeric', month:'short'})}`;
-      column.appendChild(header);
-
-      const a = availMap[dayKey];
-      if (!a){
-        const no = document.createElement('div'); no.className='small muted'; no.style.textAlign='center'; no.innerText = LANG==='ar' ? 'غير متاح' : 'Not available';
-        column.appendChild(no);
-      } else {
-        for(let h=a.start; h < a.end; h++){
-          const slotTime = new Date(day); slotTime.setHours(h,0,0,0);
-          const iso = slotTime.toISOString();
-          const slot = document.createElement('div'); slot.className='slot';
-          slot.dataset.iso = iso;
-          slot.innerText = `${h}:00 - ${h+1}:00`;
-          // check if already booked
-          const taken = bookings.some(b => b.teacherId===teacher.id && new Date(b.when).toISOString() === iso);
-          if (taken) { slot.classList.add('taken'); slot.innerText = slot.innerText + ' • ' + (LANG==='ar'?'محجوز':'Booked'); }
-          else {
-            slot.addEventListener('click', ()=>{
-              if (slot.classList.contains('selected')){
-                slot.classList.remove('selected');
-                selectedSlots = selectedSlots.filter(s=>s.slotId !== `${teacher.id}_${iso}`);
-              } else {
-                slot.classList.add('selected');
-                selectedSlots.push({ teacherId: teacher.id, when: iso, duration: 60, slotId: `${teacher.id}_${iso}`});
-              }
-            });
-          }
-          column.appendChild(slot);
-        }
-      }
-      grid.appendChild(column);
-    }
-  }
-
-  // ---------- bookings ----------
-  function confirmSelection(){
-    if (!selectedTeacherId){ alert(LANG==='ar'?'اختر مدرسًا أولاً':'Select a teacher first'); return; }
-    if (!selectedSlots.length){ alert(LANG==='ar'?'اختر مواعيد أولاً':'Pick some slots first'); return; }
-    // for demo, pick first student
-    const student = students[0] || { id: uid('s'), name:'Demo Student', grade:1 };
-    selectedSlots.forEach(s=>{
-      // create booking if not exists
-      if (bookings.some(b=>b.teacherId===s.teacherId && b.when === s.when)) return;
-      const teacher = teachers.find(t=>t.id===s.teacherId) || {};
-      const b = {
-        id: uid('b'),
-        studentId: student.id,
-        studentName: student.name,
-        teacherId: s.teacherId,
-        teacherName: (LANG==='ar'? (teacher.name_ar||teacher.name_en) : (teacher.name_en||teacher.name_ar)) || teacher.name_en || 'Teacher',
-        when: s.when,
-        duration: s.duration,
-        status: 'Scheduled',
-        attended: false,
-        price: teacher.rate || 0,
-        zoomLink: generateZoomLink()
-      };
-      bookings.push(b);
-      pushNotif(`${LANG==='ar'?'تم حجز حصة مع':'Booking created with'} ${b.teacherName} • ${formatDateISO(b.when)}`);
-    });
-    save(LS.bookings, bookings);
-    selectedSlots = [];
-    renderSelectedTeacher(); renderBookingsTable(); updateMetrics(); updateSummary();
-  }
-
-  function generateZoomLink(){
-    const id = Math.floor(Math.random()*900000000)+100000000;
-    return `https://zoom.us/j/${id}`;
-  }
-
-  // render bookings table
-  function renderBookingsTable(){
-    const tbody = el('bookingsBody'); tbody.innerHTML = '';
-    // show most recent first
-    bookings.slice().reverse().forEach(b=>{
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${escapeHTML(b.studentName)}</td>
-        <td>${escapeHTML(b.teacherName)}</td>
-        <td>${formatDateISO(b.when)}</td>
-        <td>${b.duration} min</td>
-        <td><span class="badge ${b.status==='Completed'?'green':''}">${b.status}</span></td>
-        <td><a href="${b.zoomLink}" target="_blank">${TEXT[LANG].joinText}</a></td>
-        <td><button class="btn attend-btn" data-id="${b.id}">${b.attended ? (LANG==='ar'?'حاضر':'Present') : (LANG==='ar'?'تسجيل حضور':'Mark')}</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-    // attach attend handlers
-    tbody.querySelectorAll('.attend-btn').forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        const id = e.target.dataset.id;
-        const idx = bookings.findIndex(x=>x.id===id);
-        if (idx>-1){
-          bookings[idx].attended = !bookings[idx].attended;
-          bookings[idx].status = bookings[idx].attended ? 'Completed' : 'Scheduled';
-          save(LS.bookings, bookings);
-          renderBookingsTable(); updateSummary();
-          pushNotif(LANG==='ar'?'تحديث الحضور':'Attendance updated');
-        }
-      });
-    });
-  }
-
-  // ---------- notifications ----------
-  function pushNotif(text){
-    const n = { id: uid('n'), text, time: nowISO() };
-    notifs.unshift(n);
-    if (notifs.length>200) notifs.pop();
-    save(LS.notifs, notifs);
-    renderNotifs();
-  }
-  function renderNotifs(){
-    const eln = el('notifList'); eln.innerHTML = '';
-    notifs.slice(0,50).forEach(n=>{
-      const d = document.createElement('div'); d.className='tiny muted'; d.style.marginBottom='8px';
-      d.innerHTML = `<div style="font-weight:700">${formatDateISO(n.time)}</div><div>${escapeHTML(n.text)}</div>`;
-      eln.appendChild(d);
-    });
-  }
-  // check upcoming bookings within next X minutes and notify (simulate)
-  function checkUpcomingBookings(){
-    const now = new Date();
-    bookings.forEach(b=>{
-      const when = new Date(b.when);
-      const diffMin = (when - now) / (60*1000);
-      // notify 60min and 10min before (demo conditions)
-      if (diffMin > 0 && diffMin < 61 && !b._notified60){
-        pushNotif((LANG==='ar'?'تذكير: حصة بعد ساعة مع ':'Reminder: lesson in 60min with ') + b.teacherName);
-        b._notified60 = true;
-      }
-      if (diffMin > 0 && diffMin < 11 && !b._notified10){
-        pushNotif((LANG==='ar'?'تذكير: حصة بعد 10 دقائق مع ':'Reminder: lesson in 10min with ') + b.teacherName);
-        b._notified10 = true;
-      }
-    });
-  }
-
-  // ---------- metrics & summary ----------
-  function updateMetrics(){
-    el('metricStudents').innerText = students.length;
-    el('metricBookings').innerText = bookings.length;
-    const revenue = bookings.reduce((s,b)=> s + (b.price||0), 0);
-    el('metricRevenue').innerText = revenue;
-  }
-  function updateSummary(){
-    const thisMonth = (new Date()).getMonth();
-    const m = bookings.filter(b => new Date(b.when).getMonth()===thisMonth);
-    const attended = m.filter(x=>x.attended).length;
-    const missed = m.filter(x=> !x.attended && new Date(x.when) < new Date()).length;
-    const total = m.reduce((s,x)=> s + (x.price||0), 0);
-    el('sum_attended').innerText = attended;
-    el('sum_missed').innerText = missed;
-    el('sum_total').innerText = total;
-  }
-
-  // ---------- teacher controls ----------
-  function updateTeacherControlsVisibility(){
-    const panel = el('teacherControls');
-    panel.style.display = currentRole==='teacher' ? 'block' : 'none';
-    // fill values for first teacher as example
-    if (currentRole==='teacher' && teachers[0]){
-      el('teacherRate').value = teachers[0].rate || '';
-      el('teacherAvail').value = teachers[0].avail || '';
-    }
-  }
-  function saveTeacherSettings(){
-    if (currentRole!=='teacher'){ alert(LANG==='ar'?'الرجاء اختيار دور المدرس لحفظ':'Switch to teacher role to save'); return; }
-    // edit first teacher (demo)
-    const t = teachers[0];
-    if (!t) return;
-    const rate = el('teacherRate').value.trim();
-    const avail = el('teacherAvail').value.trim();
-    if (rate) t.rate = parseFloat(rate);
-    if (avail) t.avail = avail;
-    save(LS.teachers, teachers);
-    pushNotif(LANG==='ar'?'تم حفظ إعدادات المدرس':'Teacher settings saved');
-    renderTeachers(); renderSelectedTeacher();
-  }
-
-  // ---------- export / import ----------
-  function exportData(){
-    const dump = { teachers, students, bookings, notifs };
-    const blob = new Blob([JSON.stringify(dump,null,2)], {type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'ost_data.json';
-    a.click();
-  }
-  function importData(e){
-    const f = e.target.files[0];
-    if (!f) return;
-    const reader = new FileReader();
-    reader.onload = function(ev){
-      try {
-        const obj = JSON.parse(ev.target.result);
-        if (obj.teachers) teachers = obj.teachers;
-        if (obj.students) students = obj.students;
-        if (obj.bookings) bookings = obj.bookings;
-        if (obj.notifs) notifs = obj.notifs;
-        save(LS.teachers, teachers); save(LS.students, students); save(LS.bookings, bookings); save(LS.notifs, notifs);
-        pushNotif(LANG==='ar'?'تم استيراد البيانات':'Data imported');
+      $('demoFill').addEventListener('click', ()=> {
+        teachers = demoTeachers.slice(); students = demoStudents.slice(); bookings=[]; notifs=[];
+        saveLS(LS_KEYS.TEACHERS, teachers); saveLS(LS_KEYS.STUDENTS, students); saveLS(LS_KEYS.BOOKINGS, bookings); saveLS(LS_KEYS.NOTIFS, notifs);
+        toast('Demo data loaded');
         renderAll();
-      } catch(err){ alert('Invalid JSON'); }
-    };
-    reader.readAsText(f);
-  }
+      });
 
-  // ---------- helpers ----------
-  function escapeHTML(s){ return (s||'').toString().replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c])); }
-  function throttle(fn, wait){ let t; return function(...a){ clearTimeout(t); t=setTimeout(()=>fn.apply(this,a), wait) } }
+      $('exportBtn').addEventListener('click', ()=> {
+        const dump = { teachers, students, bookings, notifs };
+        const blob = new Blob([JSON.stringify(dump,null,2)],{type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'academy-data.json'; a.click();
+      });
 
-  // initial render call
-  function renderNotifs(){ renderNotifs = renderNotifsInner; /* placeholder */ }
-  function renderNotifsInner(){ const eln = el('notifList'); eln.innerHTML=''; notifs.forEach(n=>{ const d=document.createElement('div'); d.className='tiny muted'; d.style.marginBottom='8px'; d.innerHTML = `<div style="font-weight:700">${formatDateISO(n.time)}</div><div>${escapeHTML(n.text)}</div>`; eln.appendChild(d); }); }
-  renderNotifs = renderNotifsInner;
+      $('applyFilters').addEventListener('click', ()=> renderTeachers());
+      $('clearFilters').addEventListener('click', ()=> {
+        $('gradeSelect').value='1'; $('genderPref').value=''; $('searchBox').value=''; $('statusFilter').value='';
+        renderTeachers();
+      });
 
-  // expose render functions used earlier
-  window.renderAll = renderAll;
-  window.renderTeachers = renderTeachers;
-  window.renderSelectedTeacher = renderSelectedTeacher;
-  window.renderBookingsTable = renderBookingsTable;
+      $('bookBtn').addEventListener('click', onBookSelected);
+      $('confirmSlots').addEventListener('click', confirmSlots);
 
-  // save initial datasets if not exist
-  if (!localStorage.getItem(LS.teachers)) save(LS.teachers, teachers);
-  if (!localStorage.getItem(LS.students)) save(LS.students, students);
-  if (!localStorage.getItem(LS.bookings)) save(LS.bookings, bookings);
-  if (!localStorage.getItem(LS.notifs)) save(LS.notifs, notifs);
+      $('saveTeacherSettings').addEventListener('click', saveTeacherSettings);
+      $('clearTeacherSettings').addEventListener('click', ()=> {
+        $('teacherRate').value=''; $('teacherAvailInput').value=''; toast('Cleared');
+      });
 
-})();
+      // event bindings for filters to update live
+      $('searchBox').addEventListener('input', ()=> renderTeachers());
+      $('statusFilter').addEventListener('change', ()=> renderTeachers());
+      $('genderPref').addEventListener('change', ()=> renderTeachers());
+      $('gradeSelect').addEventListener('change', ()=> renderTeachers());
+    }
 
+    // ---------- language handling ----------
+    function setLang(lang){
+      LANG = lang; localStorage.setItem('academy_lang', lang);
+      document.documentElement.lang = lang === 'ar' ? 'ar' : 'en';
+      applyTexts();
+      renderAll();
+    }
+
+    // ---------- notifications (simulated) ----------
+    function pushNotif(text){
+      const item = { id: uid('n'), text, time: nowISO() };
+      notifs.unshift(item);
+      notifs = notifs.slice(0,200);
+      saveLS(LS_KEYS.NOTIFS, notifs);
+      renderNotifs();
+    }
+    function renderNotifs(){
+      const el = $('notifLog'); el.innerHTML='';
+      notifs.forEach(n => {
+        const d = document.createElement('div'); d.innerHTML = `<div style="margin-bottom:8px"><strong>${formatDate(n.time)}</strong><div class="tiny muted">${n.text}</div></div>`;
+        el.appendChild(d);
+      });
+    }
+
+    // ---------- teachers list rendering ----------
+    function renderTeachers(){
+      const container = $('teachersList'); container.innerHTML='';
+      const grade = $('gradeSelect').value;
+      const q = ($('searchBox').value||'').toLowerCase();
+      const gender = $('genderPref').value;
+      const status = $('statusFilter').value;
+
+      // simple filter: by gender & search
+      const list = teachers.filter(t => {
+        if (gender && t.gender !== gender) return false;
+        if (q && !(t.name.toLowerCase().includes(q) || (t.subjects||[]).join(' ').toLowerCase().includes(q))) return false;
+        return true;
+      });
+
+      if (list.length===0){ container.innerHTML = `<div class="muted tiny center">No teachers found</div>`; return; }
+
+      list.forEach(t => {
+        const div = document.createElement('div'); div.className='teacher';
+        div.innerHTML = `
+          <div class="avatar">${t.name.split(' ').slice(0,1)[0].slice(0,1)}</div>
+          <div class="t-info">
+            <div class="t-name">${t.name}</div>
+            <div class="t-meta tiny">${(t.subjects||[]).join(' • ')} • Rate: ${t.rate} • <span class="rating">${t.rating}</span></div>
+            <div class="tiny muted">${t.reviews && t.reviews.length ? 'Reviews: ' + t.reviews.join(' | ') : ''}</div>
+          </div>
+          <div class="actions">
+            <button class="btn selectTeacher" data-id="${t.id}">${LANG==='ar'?'اختيار':'Select'}</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      // attach select handlers
+      container.querySelectorAll('.selectTeacher').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          selectedTeacherId = e.target.getAttribute('data-id');
+          selectedSlots = [];
+          toast(LANG==='ar' ? 'تم اختيار المدرس' : 'Teacher selected');
+          renderSelectedTeacher();
+        });
+      });
+    }
+
+    // ---------- selected teacher & availability ----------
+    function renderSelectedTeacher(){
+      const st = teachers.find(t=>t.id===selectedTeacherId);
+      if (!st){
+        $('selectedTeacherName').innerText = LANG==='ar' ? '—' : '—';
+        $('selectedTeacherMeta').innerText = '';
+        $('availabilityGrid').innerHTML = '<div class="tiny muted">No teacher selected</div>';
+        return;
+      }
+      $('selectedTeacherName').innerText = st.name;
+      $('selectedTeacherMeta').innerText = `${(st.subjects||[]).join(', ')} • ${st.rate} per hour • Rating ${st.rating}`;
+      renderAvailabilityGrid(st);
+    }
+
+    // parse availability strings like Mon:09-12,Wed:15-18
+    const WEEK = LANG==='ar' ? ['أحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function parseAvail(avStr){
+      const map = {};
+      if (!avStr) return map;
+      const parts = avStr.split(',');
+      parts.forEach(p=>{
+        const [dayPart,hrs] = p.split(':').map(s=>s.trim());
+        if (!dayPart || !hrs) return;
+        const day = dayPart.slice(0,3); // e.g. Mon
+        const hh = hrs.split('-');
+        const start = parseInt(hh[0],10); const end = parseInt(hh[1],10);
+        map[day] = {start,end};
+      });
+      return map;
+    }
+
+    function renderAvailabilityGrid(teacher){
+      const grid = $('availabilityGrid'); grid.innerHTML='';
+      // we'll show next 7 days slots
+      const now = new Date();
+      for(let i=0;i<7;i++){
+        const d = new Date(); d.setDate(now.getDate()+i);
+        const dayName = d.toLocaleDateString(LANG==='ar' ? 'ar-EG' : 'en-US', {weekday:'short'});
+        const container = document.createElement('div');
+        container.style.gridColumn='auto';
+        // header
+        const header = document.createElement('div'); header.className='tiny center muted'; header.style.marginBottom='6px';
+        header.innerHTML = `<div style="font-weight:700">${dayName}</div><div class="tiny">${d.toLocaleDateString()}</div>`;
+        container.appendChild(header);
+        // slots area (we will create 2-4 hourly slots)
+        const slotsArea = document.createElement('div');
+        slotsArea.style.display='grid'; slotsArea.style.gap='6px';
+        // generate slots from teacher.avail for weekday match
+        const availMap = parseAvail(teacher.avail||'');
+        // dayKey may be like Mon or Tue -> get by en short weekday
+        const dayKey = d.toLocaleDateString('en-US',{weekday:'short'}); // Mon,Tue...
+        const a = availMap[dayKey];
+        if (!a){
+          const no = document.createElement('div'); no.className='tiny muted center'; no.innerText = LANG==='ar' ? 'غير متاح' : 'Not available';
+          slotsArea.appendChild(no);
+        } else {
+          for(let h=a.start; h < a.end; h++){
+            const slotTime = new Date(d); slotTime.setHours(h,0,0,0);
+            const slotId = 'slot_'+teacher.id+'_'+slotTime.toISOString();
+            const slotDiv = document.createElement('div');
+            slotDiv.className = 'slot';
+            // check if already booked
+            const taken = bookings.some(b => b.teacherId===teacher.id && Math.abs(new Date(b.when) - slotTime) < 60*60*1000);
+            if (taken) slotDiv.classList.add('taken');
+            // display
+            slotDiv.dataset.iso = slotTime.toISOString();
+            slotDiv.id = slotId;
+            slotDiv.innerText = `${h}:00 - ${h+1}:00`;
+            if (!taken){
+              slotDiv.addEventListener('click', ()=>{
+                // toggle selected
+                if (slotDiv.classList.contains('selected')){
+                  slotDiv.classList.remove('selected');
+                  selectedSlots = selectedSlots.filter(s => s.slotId !== slotId);
+                } else {
+                  slotDiv.classList.add('selected');
+                  selectedSlots.push({ teacherId: teacher.id, when: slotTime.toISOString(), duration:60, slotId });
+                }
+              });
+            }
+            slotsArea.appendChild(slotDiv);
+          }
+        }
+        container.appendChild(slotsArea);
+        grid.appendChild(container);
+      }
+    }
+
+    // ---------- booking flow ----------
+    function onBookSelected(){
+      if (!selectedTeacherId){ alert(LANG==='ar' ? 'اختر مدرساً أولا' : 'Select a teacher first'); return; }
+      if (selectedSlots.length===0){ alert(LANG==='ar' ? 'اختر مواعيد' : 'Pick some slots first'); return; }
+      // open confirm prompt (simple)
+      const student = students[0] || { id:uid('s'), name:'Demo Student', grade:1 };
+      // create bookings
+      selectedSlots.forEach(sl=>{
+        // double-check not clashing
+        const exists = bookings.some(b => b.teacherId===sl.teacherId && Math.abs(new Date(b.when)-new Date(sl.when))<1000);
+        if (exists) return;
+        const booking = {
+          id: uid('b'), studentId: student.id, studentName: student.name,
+          teacherId: sl.teacherId, teacherName: (teachers.find(t=>t.id===sl.teacherId)||{}).name || '',
+          when: sl.when, duration: sl.duration, status:'Scheduled', zoomLink: generateZoomLink(), attended:false,
+          price: (teachers.find(t=>t.id===sl.teacherId)||{rate:0}).rate
+        };
+        bookings.push(booking);
+        pushNotif(`${LANG==='ar' ? 'تم حجز حصة' : 'Booking created'} • ${booking.teacherName} • ${formatDate(booking.when)}`);
+      });
+      // persist
+      saveLS(LS_KEYS.BOOKINGS, bookings);
+      selectedSlots=[];
+      renderSelectedTeacher(); renderBookings(); updateMetrics();
+      toast(LANG==='ar' ? 'تم الحجز' : 'Booked');
+    }
+
+    function confirmSlots(){
+      // same as book, but visible confirm
+      onBookSelected();
+    }
+
+    function generateZoomLink(){
+      // fake zoom link generator for demo
+      const id = Math.floor(Math.random()*900000000)+100000000;
+      return `https://zoom.us/j/${id}`;
+    }
+
+    // ---------- bookings table rendering and interactions ----------
+    function renderBookings(){
+      const tbody = $('bookingsBody'); tbody.innerHTML='';
+      bookings.slice().reverse().forEach(b => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(b.studentName)}</td>
+          <td>${escapeHtml(b.teacherName)}</td>
+          <td>${formatDate(b.when)}</td>
+          <td>${b.duration} min</td>
+          <td><span class="badge ${b.status==='Completed'?'green':''}">${b.status}</span></td>
+          <td><a href="${b.zoomLink}" target="_blank" class="tiny">${LANG==='ar'?'Join':'Join'}</a></td>
+          <td>
+            <button class="btn tiny attendBtn" data-id="${b.id}">${b.attended ? (LANG==='ar'?'حضر':'Present') : (LANG==='ar'?'تسجيل حضور':'Mark')}</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      // attach handlers
+      document.querySelectorAll('.attendBtn').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const id = e.target.dataset.id;
+          const idx = bookings.findIndex(x=>x.id===id);
+          if (idx>-1){
+            bookings[idx].attended = !bookings[idx].attended;
+            bookings[idx].status = bookings[idx].attended ? 'Completed' : 'Scheduled';
+            saveLS(LS_KEYS.BOOKINGS, bookings);
+            toast(LANG==='ar' ? 'تم تحديث الحضور' : 'Attendance updated');
+            renderBookings(); updateSummary();
+          }
+        });
+      });
+    }
+
+    // ---------- teacher settings ----------
+    function saveTeacherSettings(){
+      if (currentRole !== 'teacher'){ alert(LANG==='ar' ? 'الرجاء تسجيل الدخول كمدرس لحفظ الإعدادات' : 'Switch to teacher role to save settings'); return; }
+      // for demo, we'll edit first teacher
+      const t = teachers[0];
+      const rate = $('teacherRate').value.trim();
+      const avail = $('teacherAvailInput').value.trim();
+      if (rate) t.rate = rate;
+      if (avail) t.avail = avail;
+      saveLS(LS_KEYS.TEACHERS, teachers);
+      toast(LANG==='ar' ? 'Settings saved' : 'Saved');
+      renderTeachers(); renderSelectedTeacher();
+    }
+
+    // ---------- metrics & summary ----------
+    function updateMetrics(){
+      $('metric_students').innerText = students.length;
+      $('metric_bookings').innerText = bookings.length;
+      const revenue = bookings.reduce((s,b)=> s + (b.price||0), 0);
+      $('metric_revenue').innerText = revenue;
+      updateSummary();
+    }
+    function updateSummary(){
+      const thisMonth = (new Date()).getMonth();
+      const mBookings = bookings.filter(b => new Date(b.when).getMonth()===thisMonth);
+      const attended = mBookings.filter(b=>b.attended).length;
+      const missed = mBookings.filter(b=>!b.attended && new Date(b.when) < new Date()).length;
+      const total = mBookings.reduce((s,b)=> s + (b.price||0), 0);
+      $('summary_attended').innerText = attended;
+      $('summary_missed').innerText = missed;
+      $('summary_total').innerText = total;
+    }
+
+    // ---------- rendering all ----------
+    function renderAll(){
+      applyTexts();
+      renderTeachers();
+      renderSelectedTeacher();
+      renderBookings();
+      renderNotifs();
+      updateMetrics();
+    }
+
+    // ---------- small helpers ----------
+    function toast(msg){
+      pushNotif(msg);
+      console.log('TOAST:',msg);
+    }
+    function escapeHtml(text){
+      return (text||'').toString().replace(/[&<>"'`]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[s]));
+    }
+
+    // ---------- initialize app ----------
+    initUI();
+    setLang(LANG); // sets texts
+    // ensure demo data persisted if empty
+    if (!localStorage.getItem(LS_KEYS.TEACHERS)) saveLS(LS_KEYS.TEACHERS, teachers);
+    if (!localStorage.getItem(LS_KEYS.STUDENTS)) saveLS(LS_KEYS.STUDENTS, students);
+    if (!localStorage.getItem(LS_KEYS.BOOKINGS)) saveLS(LS_KEYS.BOOKINGS, bookings);
+    if (!localStorage.getItem(LS_KEYS.NOTIFS)) saveLS(LS_KEYS.NOTIFS, notifs);
+
+    renderAll();
+
+    // auto-save on unload
+    window.addEventListener('beforeunload', ()=> {
+      saveLS(LS_KEYS.TEACHERS, teachers); saveLS(LS_KEYS.STUDENTS, students); saveLS(LS_KEYS.BOOKINGS, bookings); saveLS(LS_KEYS.NOTIFS, notifs);
+    });
+
+  })();
+  </script>
+</body>
+</html>
