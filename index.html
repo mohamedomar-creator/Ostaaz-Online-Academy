@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ostaaz Online Academy | أكاديمية أستاذ أونلاين</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        body.en {
+            direction: ltr;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lang-switch {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-switch:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .user-type-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* Dashboard Cards */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin: 0.25rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+            transform: translateY(-2px);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .table tr:hover {
+            background: #f7fafc;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* Teacher Cards */
+        .teacher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .teacher-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .teacher-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-left: 1rem;
+        }
+
+        .teacher-details h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .teacher-rating {
+            color: #f59e0b;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 1rem;
+            }
+        }
+
+        /* Hide sections */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showSection('home')">
+                <span data-en="Ostaaz Online Academy | أكاديمية أستاذ أونلاين">Ostaaz Online Academy | أكاديمية أستاذ أونلاين</span>
+            </a>
+            <div class="nav-controls">
+                <button class="lang-switch" onclick="toggleLanguage()">
+                    <span id="langText">English</span>
+                </button>
+                <select class="user-type-select" id="userType" onchange="switchUserType()">
+                    <option value="student" data-en="Student">طالب</option>
+                    <option value="parent" data-en="Parent">ولي أمر</option>
+                    <option value="teacher" data-en="Teacher">مدرس</option>
+                    <option value="admin" data-en="Admin">إدارة</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Home Section -->
+        <div id="home" class="section active">
+            <div class="dashboard">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h2 class="card-title" data-en="Welcome to Ostaaz Academy">مرحباً بك في أكاديمية أستاذ</h2>
+                    </div>
+                    <p data-en="Your gateway to quality online education with the best teachers">بوابتك للتعليم الإلكتروني المتميز مع أفضل المدرسين</p>
+                    <button class="btn" onclick="showSection('teachers')" data-en="Browse Teachers">تصفح المدرسين</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h2 class="card-title" data-en="My Schedule">جدولي الدراسي</h2>
+                    </div>
+                    <p data-en="View your upcoming lessons and manage your time">اعرض دروسك القادمة وأدر وقتك</p>
+                    <button class="btn" onclick="showSection('schedule')" data-en="View Schedule">عرض الجدول</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2 class="card-title" data-en="Progress Report">تقرير التقدم</h2>
+                    </div>
+                    <p data-en="Track your attendance and academic progress">تتبع حضورك وتقدمك الأكاديمي</p>
+                    <button class="btn" onclick="showSection('reports')" data-en="View Reports">عرض التقارير</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Section -->
+        <div id="student" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2 class="card-title" data-en="Student Dashboard">لوحة الطالب</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-en="Select Grade Level">اختر الصف الدراسي</label>
+                    <select class="form-control" id="gradeSelect">
+                        <option value="grade1" data-en="Grade 1">الصف الأول</option>
+                        <option value="grade2" data-en="Grade 2">الصف الثاني</option>
+                        <option value="grade3" data-en="Grade 3">الصف الثالث</option>
+                        <option value="grade4" data-en="Grade 4">الصف الرابع</option>
+                        <option value="grade5" data-en="Grade 5">الصف الخامس</option>
+                        <option value="grade6" data-en="Grade 6">الصف السادس</option>
+                        <option value="grade7" data-en="Grade 7">الصف السابع</option>
+                        <option value="grade8" data-en="Grade 8">الصف الثامن</option>
+                        <option value="grade9" data-en="Grade 9">الصف التاسع</option>
+                        <option value="grade10" data-en="Grade 10">الصف العاشر</option>
+                        <option value="grade11" data-en="Grade 11">الصف الحادي عشر</option>
+                        <option value="grade12" data-en="Grade 12">الصف الثاني عشر</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" data-en="Teacher Gender Preference">تفضيل جنس المدرس</label>
+                    <select class="form-control" id="genderFilter">
+                        <option value="all" data-en="All">الكل</option>
+                        <option value="male" data-en="Male">ذكر</option>
+                        <option value="female" data-en="Female">أنثى</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="filterTeachers()" data-en="Find Teachers">البحث عن مدرسين</button>
+                <button class="btn btn-secondary" onclick="showMyLessons()" data-en="My Lessons">دروسي</button>
+                <button class="btn btn-secondary" onclick="showNotifications()" data-en="Notifications">الإشعارات</button>
+            </div>
+        </div>
+
+        <!-- Teachers Section -->
+        <div id="teachers" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h2 class="card-title" data-en="Available Teachers">المدرسون المتاحون</h2>
+                </div>
+                <div id="teachersGrid" class="teacher-grid">
+                    <!-- Teachers will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Section -->
+        <div id="schedule" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <h2 class="card-title" data-en="My Schedule">جدولي الدراسي</h2>
+                </div>
+                <div id="scheduleTable">
+                    <!-- Schedule will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h2 class="card-title" data-en="Progress Reports">تقارير التقدم</h2>
+                </div>
+                <div id="reportsContent">
+                    <!-- Reports will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin" class="section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalStudents">247</div>
+                    <div class="stat-label" data-en="Total Students">إجمالي الطلاب</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTeachers">42</div>
+                    <div class="stat-label" data-en="Total Teachers">إجمالي المدرسين</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRevenue">$12,450</div>
+                    <div class="stat-label" data-en="Monthly Revenue">الإيرادات الشهرية</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="attendanceRate">87%</div>
+                    <div class="stat-label" data-en="Attendance Rate">معدل الحضور</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h2 class="card-title" data-en="Admin Controls">أدوات الإدارة</h2>
+                </div>
+                <button class="btn" onclick="manageTeachers()" data-en="Manage Teachers">إدارة المدرسين</button>
+                <button class="btn" onclick="manageStudents()" data-en="Manage Students">إدارة الطلاب</button>
+                <button class="btn" onclick="generateReports()" data-en="Generate Reports">إنشاء تقارير</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 <span data-en="Ostaaz Online Academy | أكاديمية أستاذ أونلاين">Ostaaz Online Academy | أكاديمية أستاذ أونلاين</span></p>
+    </footer>
+
+    <script>
+        // Global Variables
+        let currentLang = 'ar';
+        let currentUser = 'student';
+        
+        // Mock Data
+        const mockData = {
+            teachers: [
+                {
+                    id: 1,
+                    name: 'أحمد محمد',
+                    nameEn: 'Ahmed Mohamed',
+                    subject: 'رياضيات',
+                    subjectEn: 'Mathematics',
+                    gender: 'male',
+                    rating: 4.8,
+                    reviews: 124,
+                    grades: ['grade9', 'grade10', 'grade11'],
+                    price: 25,
+                    availability: ['09:00', '10:00', '14:00', '15:00']
+                },
+                {
+                    id: 2,
+                    name: 'فاطمة علي',
+                    nameEn: 'Fatma Ali',
+                    subject: 'فيزياء',
+                    subjectEn: 'Physics',
+                    gender: 'female',
+                    rating: 4.9,
+                    reviews: 98,
+                    grades: ['grade10', 'grade11', 'grade12'],
+                    price: 30,
+                    availability: ['11:00', '12:00', '16:00', '17:00']
+                },
+                {
+                    id: 3,
+                    name: 'خالد حسن',
+                    nameEn: 'Khaled Hassan',
+                    subject: 'كيمياء',
+                    subjectEn: 'Chemistry',
+                    gender: 'male',
+                    rating: 4.7,
+                    reviews: 156,
+                    grades: ['grade11', 'grade12'],
+                    price: 28,
+                    availability: ['13:00', '14:00', '18:00', '19:00']
+                },
+                {
+                    id: 4,
+                    name: 'مريم أحمد',
+                    nameEn: 'Maryam Ahmed',
+                    subject: 'انجليزي',
+                    subjectEn: 'English',
+                    gender: 'female',
+                    rating: 4.6,
+                    reviews: 89,
+                    grades: ['grade7', 'grade8', 'grade9'],
+                    price: 22,
+                    availability: ['08:00', '09:00', '15:00', '16:00']
+                }
+            ],
+            
+            lessons: [
+                {
+                    id: 1,
+                    teacherId: 1,
+                    date: '2025-09-27',
+                    time: '10:00',
+                    duration: 60,
+                    subject: 'رياضيات',
+                    subjectEn: 'Mathematics',
+                    zoomLink: 'https://zoom.us/j/123456789',
+                    status: 'scheduled',
+                    attendance: null
+                },
+                {
+                    id: 2,
+                    teacherId: 2,
+                    date: '2025-09-28',
+                    time: '14:00',
+                    duration: 60,
+                    subject: 'فيزياء',
+                    subjectEn: 'Physics',
+                    zoomLink: 'https://zoom.us/j/987654321',
+                    status: 'scheduled',
+                    attendance: null
+                }
+            ],
+            
+            attendanceRecords: [],
+            
+            payments: [],
+            
+            notifications: [
+                {
+                    id: 1,
+                    message: 'درس الرياضيات غداً في الساعة 10:00 صباحاً',
+                    messageEn: 'Mathematics lesson tomorrow at 10:00 AM',
+                    type: 'reminder',
+                    date: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    message: 'تم إضافة درس جديد في الفيزياء',
+                    messageEn: 'New Physics lesson has been added',
+                    type: 'info',
+                    date: new Date().toISOString()
+                }
+            ]
+        };
+
+        // Initialize Data
+        function initializeData() {
+            // Load data from localStorage or use mock data
+            const savedData = localStorage.getItem('ostaazAcademyData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                Object.assign(mockData, parsedData);
+            } else {
+                saveData();
+            }
+        }
+
+        // Save Data
+        function saveData() {
+            localStorage.setItem('ostaazAcademyData', JSON.stringify(mockData));
+        }
+
+        // Language Toggle
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.body.className = currentLang === 'en' ? 'en' : '';
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.getElementById('langText').textContent = currentLang === 'ar' ? 'English' : 'العربية';
+            
+            updateLanguage();
+        }
+
+        // Update Language
+        function updateLanguage() {
+            const elements = document.querySelectorAll('[data-en]');
+            elements.forEach(element => {
+                const enText = element.getAttribute('data-en');
+                const currentText = element.textContent || element.innerHTML;
+                
+                if (currentLang === 'en') {
+                    element.setAttribute('data-ar', currentText);
+                    element.textContent = enText;
+                } else {
+                    const arText = element.getAttribute('data-ar');
+                    if (arText) {
+                        element.textContent = arText;
+                    }
+                }
+            });
+
+            // Update select options
+            const selectElements = document.querySelectorAll('select option[data-en]');
+            selectElements.forEach(option => {
+                const enText = option.getAttribute('data-en');
+                const currentText = option.textContent;
+                
+                if (currentLang === 'en') {
+                    option.setAttribute('data-ar', currentText);
+                    option.textContent = enText;
+                } else {
+                    const arText = option.getAttribute('data-ar');
+                    if (arText) {
+                        option.textContent = arText;
+                    }
+                }
+            });
+        }
+
+        // Switch User Type
+        function switchUserType() {
+            currentUser = document.getElementById('userType').value;
+            showSection('home');
+            
+            if (currentUser === 'admin') {
+                showSection('admin');
+            }
+        }
+
+        // Show Section
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Load section-specific content
+            switch(sectionId) {
+                case 'teachers':
+                    loadTeachers();
+                    break;
+                case 'schedule':
+                    loadSchedule();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+            }
+        }
+
+        // Load Teachers
+        function loadTeachers() {
+            const grid = document.getElementById('teachersGrid');
+            const grade = document.getElementById('gradeSelect')?.value || 'grade10';
+            const gender = document.getElementById('genderFilter')?.value || 'all';
+            
+            let filteredTeachers = mockData.teachers.filter(teacher => {
+                const gradeMatch = teacher.grades.includes(grade);
+                const genderMatch = gender === 'all' || teacher.gender === gender;
+                return gradeMatch && genderMatch;
+            });
+
+            grid.innerHTML = filteredTeachers.map(teacher => `
+                <div class="teacher-card">
+                    <div class="teacher-info">
+                        <div class="teacher-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="teacher-details">
+                            <h3>${currentLang === 'en' ? teacher.nameEn : teacher.name}</h3>
+                            <p>${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</p>
+                            <div class="teacher-rating">
+                                ${'★'.repeat(Math.floor(teacher.rating))} ${teacher.rating} (${teacher.reviews} ${currentLang === 'en' ? 'reviews' : 'تقييم'})
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>${teacher.price}/${currentLang === 'en' ? 'hour' : 'ساعة'}</strong>
+                    </div>
+                    <button class="btn" onclick="bookLesson(${teacher.id})" ${currentLang === 'en' ? 'data-en="Book Lesson"' : ''}>${currentLang === 'en' ? 'Book Lesson' : 'احجز درس'}</button>
+                    <button class="btn btn-secondary" onclick="viewTeacherProfile(${teacher.id})" ${currentLang === 'en' ? 'data-en="View Profile"' : ''}>${currentLang === 'en' ? 'View Profile' : 'عرض الملف'}</button>
+                </div>
+            `).join('');
+        }
+
+        // Filter Teachers
+        function filterTeachers() {
+            loadTeachers();
+        }
+
+        // Book Lesson
+        function bookLesson(teacherId) {
+            const teacher = mockData.teachers.find(t => t.id === teacherId);
+            if (!teacher) return;
+
+            const modalContent = `
+                <h2 ${currentLang === 'en' ? 'data-en="Book Lesson"' : ''}>${currentLang === 'en' ? 'Book Lesson' : 'احجز درس'}</h2>
+                <p><strong>${currentLang === 'en' ? 'Teacher' : 'المدرس'}:</strong> ${currentLang === 'en' ? teacher.nameEn : teacher.name}</p>
+                <p><strong>${currentLang === 'en' ? 'Subject' : 'المادة'}:</strong> ${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</p>
+                <p><strong>${currentLang === 'en' ? 'Price' : 'السعر'}:</strong> ${teacher.price}/${currentLang === 'en' ? 'hour' : 'ساعة'}</p>
+                
+                <div class="form-group">
+                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Select Date"' : ''}>${currentLang === 'en' ? 'Select Date' : 'اختر التاريخ'}</label>
+                    <input type="date" class="form-control" id="lessonDate" min="${new Date().toISOString().split('T')[0]}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Available Times"' : ''}>${currentLang === 'en' ? 'Available Times' : 'الأوقات المتاحة'}</label>
+                    <select class="form-control" id="lessonTime">
+                        ${teacher.availability.map(time => `<option value="${time}">${time}</option>`).join('')}
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="confirmBooking(${teacherId})" ${currentLang === 'en' ? 'data-en="Confirm Booking"' : ''}>${currentLang === 'en' ? 'Confirm Booking' : 'تأكيد الحجز'}</button>
+                <button class="btn btn-secondary" onclick="closeModal()" ${currentLang === 'en' ? 'data-en="Cancel"' : ''}>${currentLang === 'en' ? 'Cancel' : 'إلغاء'}</button>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        // Confirm Booking
+        function confirmBooking(teacherId) {
+            const date = document.getElementById('lessonDate').value;
+            const time = document.getElementById('lessonTime').value;
+            
+            if (!date || !time) {
+                showNotification(currentLang === 'en' ? 'Please select date and time' : 'يرجى اختيار التاريخ والوقت');
+                return;
+            }
+
+            const teacher = mockData.teachers.find(t => t.id === teacherId);
+            const newLesson = {
+                id: mockData.lessons.length + 1,
+                teacherId: teacherId,
+                date: date,
+                time: time,
+                duration: 60,
+                subject: teacher.subject,
+                subjectEn: teacher.subjectEn,
+                zoomLink: `https://zoom.us/j/${Math.random().toString().substr(2, 11)}`,
+                status: 'scheduled',
+                attendance: null
+            };
+
+            mockData.lessons.push(newLesson);
+            saveData();
+            
+            closeModal();
+            showNotification(currentLang === 'en' ? 'Lesson booked successfully!' : 'تم حجز الدرس بنجاح!');
+        }
+
+        // View Teacher Profile
+        function viewTeacherProfile(teacherId) {
+            const teacher = mockData.teachers.find(t => t.id === teacherId);
+            if (!teacher) return;
+
+            const modalContent = `
+                <h2>${currentLang === 'en' ? teacher.nameEn : teacher.name}</h2>
+                <div style="margin: 1rem 0;">
+                    <div class="teacher-avatar" style="margin: 0 auto 1rem auto;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <p><strong>${currentLang === 'en' ? 'Subject' : 'المادة'}:</strong> ${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</p>
+                <p><strong>${currentLang === 'en' ? 'Rating' : 'التقييم'}:</strong> ${'★'.repeat(Math.floor(teacher.rating))} ${teacher.rating}/5</p>
+                <p><strong>${currentLang === 'en' ? 'Reviews' : 'عدد التقييمات'}:</strong> ${teacher.reviews}</p>
+                <p><strong>${currentLang === 'en' ? 'Price' : 'السعر'}:</strong> ${teacher.price}/${currentLang === 'en' ? 'hour' : 'ساعة'}</p>
+                <p><strong>${currentLang === 'en' ? 'Available Grades' : 'الصفوف المتاحة'}:</strong> ${teacher.grades.map(g => g.replace('grade', currentLang === 'en' ? 'Grade ' : 'الصف ')).join(', ')}</p>
+                
+                <h3 ${currentLang === 'en' ? 'data-en="Recent Reviews"' : ''}>${currentLang === 'en' ? 'Recent Reviews' : 'آراء الطلاب'}</h3>
+                <div style="background: #f7fafc; padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                    <p>"${currentLang === 'en' ? 'Excellent teacher, very patient and explains concepts clearly.' : 'مدرس ممتاز، صبور جداً ويشرح المفاهيم بوضوح.'}"</p>
+                    <small>- ${currentLang === 'en' ? 'Sarah M.' : 'سارة م.'}</small>
+                </div>
+                <div style="background: #f7fafc; padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                    <p>"${currentLang === 'en' ? 'My grades improved significantly after taking lessons with this teacher.' : 'تحسنت درجاتي كثيراً بعد أخذ دروس مع هذا المدرس.'}"</p>
+                    <small>- ${currentLang === 'en' ? 'Ahmed K.' : 'أحمد ك.'}</small>
+                </div>
+                
+                <button class="btn" onclick="bookLesson(${teacherId})" ${currentLang === 'en' ? 'data-en="Book Lesson"' : ''}>${currentLang === 'en' ? 'Book Lesson' : 'احجز درس'}</button>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        // Load Schedule
+        function loadSchedule() {
+            const container = document.getElementById('scheduleTable');
+            const userLessons = mockData.lessons.filter(lesson => lesson.status === 'scheduled');
+            
+            if (userLessons.length === 0) {
+                container.innerHTML = `<p ${currentLang === 'en' ? 'data-en="No scheduled lessons"' : ''}>${currentLang === 'en' ? 'No scheduled lessons' : 'لا توجد دروس مجدولة'}</p>`;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th ${currentLang === 'en' ? 'data-en="Date"' : ''}>${currentLang === 'en' ? 'Date' : 'التاريخ'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Time"' : ''}>${currentLang === 'en' ? 'Time' : 'الوقت'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Subject"' : ''}>${currentLang === 'en' ? 'Subject' : 'المادة'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Teacher"' : ''}>${currentLang === 'en' ? 'Teacher' : 'المدرس'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Actions"' : ''}>${currentLang === 'en' ? 'Actions' : 'الإجراءات'}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${userLessons.map(lesson => {
+                            const teacher = mockData.teachers.find(t => t.id === lesson.teacherId);
+                            return `
+                                <tr>
+                                    <td>${lesson.date}</td>
+                                    <td>${lesson.time}</td>
+                                    <td>${currentLang === 'en' ? lesson.subjectEn : lesson.subject}</td>
+                                    <td>${teacher ? (currentLang === 'en' ? teacher.nameEn : teacher.name) : 'Unknown'}</td>
+                                    <td>
+                                        <button class="btn" onclick="joinLesson('${lesson.zoomLink}')" ${currentLang === 'en' ? 'data-en="Join Zoom"' : ''}>${currentLang === 'en' ? 'Join Zoom' : 'دخول الزوم'}</button>
+                                        <button class="btn btn-secondary" onclick="markAttendance(${lesson.id})" ${currentLang === 'en' ? 'data-en="Mark Attendance"' : ''}>${currentLang === 'en' ? 'Mark Attendance' : 'تسجيل الحضور'}</button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Join Lesson
+        function joinLesson(zoomLink) {
+            window.open(zoomLink, '_blank');
+            showNotification(currentLang === 'en' ? 'Opening Zoom meeting...' : 'فتح اجتماع الزوم...');
+        }
+
+        // Mark Attendance
+        function markAttendance(lessonId) {
+            const modalContent = `
+                <h2 ${currentLang === 'en' ? 'data-en="Mark Attendance"' : ''}>${currentLang === 'en' ? 'Mark Attendance' : 'تسجيل الحضور'}</h2>
+                <div class="form-group">
+                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Attendance Status"' : ''}>${currentLang === 'en' ? 'Attendance Status' : 'حالة الحضور'}</label>
+                    <select class="form-control" id="attendanceStatus">
+                        <option value="present" ${currentLang === 'en' ? 'data-en="Present"' : ''}>${currentLang === 'en' ? 'Present' : 'حاضر'}</option>
+                        <option value="absent" ${currentLang === 'en' ? 'data-en="Absent"' : ''}>${currentLang === 'en' ? 'Absent' : 'غائب'}</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="saveAttendance(${lessonId})" ${currentLang === 'en' ? 'data-en="Save"' : ''}>${currentLang === 'en' ? 'Save' : 'حفظ'}</button>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        // Save Attendance
+        function saveAttendance(lessonId) {
+            const status = document.getElementById('attendanceStatus').value;
+            const lesson = mockData.lessons.find(l => l.id === lessonId);
+            
+            if (lesson) {
+                lesson.attendance = status;
+                
+                // Add to attendance records
+                mockData.attendanceRecords.push({
+                    lessonId: lessonId,
+                    date: lesson.date,
+                    status: status,
+                    subject: lesson.subject
+                });
+                
+                saveData();
+                closeModal();
+                showNotification(currentLang === 'en' ? 'Attendance marked successfully!' : 'تم تسجيل الحضور بنجاح!');
+            }
+        }
+
+        // Load Reports
+        function loadReports() {
+            const container = document.getElementById('reportsContent');
+            const attendedLessons = mockData.attendanceRecords.filter(record => record.status === 'present');
+            const totalLessons = mockData.attendanceRecords.length;
+            const attendanceRate = totalLessons > 0 ? Math.round((attendedLessons.length / totalLessons) * 100) : 0;
+            const totalPayment = mockData.lessons.length * 25; // Assuming average $25 per lesson
+
+            const reportsHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">${attendedLessons.length}</div>
+                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Lessons Attended"' : ''}>${currentLang === 'en' ? 'Lessons Attended' : 'الدروس المحضورة'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalLessons}</div>
+                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Total Lessons"' : ''}>${currentLang === 'en' ? 'Total Lessons' : 'إجمالي الدروس'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${attendanceRate}%</div>
+                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Attendance Rate"' : ''}>${currentLang === 'en' ? 'Attendance Rate' : 'معدل الحضور'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${totalPayment}</div>
+                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Total Payment"' : ''}>${currentLang === 'en' ? 'Total Payment' : 'إجمالي المدفوعات'}</div>
+                    </div>
+                </div>
+                
+                <h3 ${currentLang === 'en' ? 'data-en="Monthly Progress"' : ''}>${currentLang === 'en' ? 'Monthly Progress' : 'التقدم الشهري'}</h3>
+                <div style="background: white; padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                    <canvas id="progressChart" width="400" height="200"></canvas>
+                </div>
+                
+                <button class="btn" onclick="downloadReport()" ${currentLang === 'en' ? 'data-en="Download Report"' : ''}>${currentLang === 'en' ? 'Download Report' : 'تحميل التقرير'}</button>
+                <button class="btn btn-secondary" onclick="makePayment()" ${currentLang === 'en' ? 'data-en="Make Payment"' : ''}>${currentLang === 'en' ? 'Make Payment' : 'الدفع'}</button>
+            `;
+            
+            container.innerHTML = reportsHTML;
+            drawProgressChart();
+        }
+
+        // Draw Progress Chart (Simple implementation)
+        function drawProgressChart() {
+            const canvas = document.getElementById('progressChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw simple bar chart
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(50, height - 100, 60, 80);
+            ctx.fillRect(150, height - 120, 60, 100);
+            ctx.fillRect(250, height - 80, 60, 60);
+            ctx.fillRect(350, height - 140, 60, 120);
+            
+            // Draw labels
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Week 1', 80, height - 10);
+            ctx.fillText('Week 2', 180, height - 10);
+            ctx.fillText('Week 3', 280, height - 10);
+            ctx.fillText('Week 4', 380, height - 10);
+        }
+
+        // Download Report
+        function downloadReport() {
+            const reportData = {
+                attendanceRecords: mockData.attendanceRecords,
+                lessons: mockData.lessons,
+                generatedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'student_report.json';
+            a.click();
+            
+            showNotification(currentLang === 'en' ? 'Report downloaded successfully!' : 'تم تحميل التقرير بنجاح!');
+        }
+
+        // Make Payment
+        function makePayment() {
+            const modalContent = `
+                <h2 ${currentLang === 'en' ? 'data-en="Make Payment"' : ''}>${currentLang === 'en' ? 'Make Payment' : 'الدفع'}</h2>
+                <p ${currentLang === 'en' ? 'data-en="Total Amount Due"' : ''}><strong>${currentLang === 'en' ? 'Total Amount Due' : 'المبلغ المطلوب'}:</strong> ${mockData.lessons.length * 25}</p>
+                
+                <div class="form-group">
+                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Payment Method"' : ''}>${currentLang === 'en' ? 'Payment Method' : 'طريقة الدفع'}</label>
+                    <select class="form-control" id="paymentMethod">
+                        <option value="credit" ${currentLang === 'en' ? 'data-en="Credit Card"' : ''}>${currentLang === 'en' ? 'Credit Card' : 'بطاقة ائتمان'}</option>
+                        <option value="bank" ${currentLang === 'en' ? 'data-en="Bank Transfer"' : ''}>${currentLang === 'en' ? 'Bank Transfer' : 'تحويل بنكي'}</option>
+                        <option value="wallet" ${currentLang === 'en' ? 'data-en="Digital Wallet"' : ''}>${currentLang === 'en' ? 'Digital Wallet' : 'محفظة رقمية'}</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Card Number"' : ''}>${currentLang === 'en' ? 'Card Number' : 'رقم البطاقة'}</label>
+                    <input type="text" class="form-control" placeholder="**** **** **** ****">
+                </div>
+                
+                <button class="btn" onclick="processPayment()" ${currentLang === 'en' ? 'data-en="Process Payment"' : ''}>${currentLang === 'en' ? 'Process Payment' : 'معالجة الدفع'}</button>
+                <button class="btn btn-secondary" onclick="closeModal()" ${currentLang === 'en' ? 'data-en="Cancel"' : ''}>${currentLang === 'en' ? 'Cancel' : 'إلغاء'}</button>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        // Process Payment
+        function processPayment() {
+            // Simulate payment processing
+            setTimeout(() => {
+                mockData.payments.push({
+                    id: mockData.payments.length + 1,
+                    amount: mockData.lessons.length * 25,
+                    date: new Date().toISOString(),
+                    method: document.getElementById('paymentMethod').value,
+                    status: 'completed'
+                });
+                
+                saveData();
+                closeModal();
+                showNotification(currentLang === 'en' ? 'Payment processed successfully!' : 'تم الدفع بنجاح!');
+            }, 2000);
+            
+            showNotification(currentLang === 'en' ? 'Processing payment...' : 'جاري معالجة الدفع...');
+        }
+
+        // Show My Lessons
+        function showMyLessons() {
+            showSection('schedule');
+        }
+
+        // Show Notifications
+        function showNotifications() {
+            const modalContent = `
+                <h2 ${currentLang === 'en' ? 'data-en="Notifications"' : ''}>${currentLang === 'en' ? 'Notifications' : 'الإشعارات'}</h2>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${mockData.notifications.map(notification => `
+                        <div style="background: #f7fafc; padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #667eea;">
+                            <p>${currentLang === 'en' ? notification.messageEn : notification.message}</p>
+                            <small style="color: #666;">${new Date(notification.date).toLocaleDateString()}</small>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        // Admin Functions
+        function manageTeachers() {
+            const modalContent = `
+                <h2 ${currentLang === 'en' ? 'data-en="Manage Teachers"' : ''}>${currentLang === 'en' ? 'Manage Teachers' : 'إدارة المدرسين'}</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th ${currentLang === 'en' ? 'data-en="Name"' : ''}>${currentLang === 'en' ? 'Name' : 'الاسم'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Subject"' : ''}>${currentLang === 'en' ? 'Subject' : 'المادة'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Rating"' : ''}>${currentLang === 'en' ? 'Rating' : 'التقييم'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Students"' : ''}>${currentLang === 'en' ? 'Students' : 'الطلاب'}</th>
+                            <th ${currentLang === 'en' ? 'data-en="Actions"' : ''}>${currentLang === 'en' ? 'Actions' : 'الإجراءات'}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${mockData.teachers.map(teacher => `
+                            <tr>
+                                <td>${currentLang === 'en' ? teacher.nameEn : teacher.name}</td>
+                                <td>${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</td>
+                                <td>${teacher.rating}</td>
+                                <td>${Math.floor(Math.random() * 20) + 5}</td>
+                                <td>
+                                    <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" ${currentLang === 'en' ? 'data-en="Edit"' : ''}>${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        function manageStudents() {
+            const modalContent = `
+                <h2 ${currentLang === 'en' ? 'data-en="Manage Students"' : ''}>${currentLang === 'en' ? 'Manage Students' : 'إدارة الطلاب'}</h2>
+                <div style="text-align: center; padding: 2rem;">
+                    <p ${currentLang === 'en' ? 'data-en="Student management interface would be implemented here"' : ''}>${currentLang === 'en' ? 'Student management interface would be implemented here' : 'سيتم تنفيذ واجهة إدارة الطلاب هنا'}</p>
+                </div>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        function generateReports() {
+            const modalContent = `
+                <h2 ${currentLang === 'en' ? 'data-en="Generate Reports"' : ''}>${currentLang === 'en' ? 'Generate Reports' : 'إنشاء التقارير'}</h2>
+                <div style="text-align: center; padding: 2rem;">
+                    <p ${currentLang === 'en' ? 'data-en="Report generation interface would be implemented here"' : ''}>${currentLang === 'en' ? 'Report generation interface would be implemented here' : 'سيتم تنفيذ واجهة إنشاء التقارير هنا'}</p>
+                </div>
+            `;
+            
+            showModal(modalContent);
+        }
+
+        // Utility Functions
+        function showModal(content) {
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            loadTeachers();
+            
+            // Close modal when clicking outside
+            window.onclick = function(event) {
+                const modal = document.getElementById('modal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            };
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification(currentLang === 'en' ? 'Welcome to Ostaaz Online Academy!' : 'مرحباً بك في أكاديمية أستاذ أونلاين!');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
