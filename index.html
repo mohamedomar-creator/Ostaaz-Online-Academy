@@ -1,1299 +1,1010 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ostaaz Online Academy | أكاديمية أستاذ أونلاين</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+import React, { useState, useEffect } from 'react';
+import { Calendar, Clock, Star, User, Users, BookOpen, DollarSign, Bell, Video, CheckCircle, XCircle, BarChart3, Home, Settings, LogOut, Phone, MessageCircle } from 'lucide-react';
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-            transition: all 0.3s ease;
-        }
+// بيانات وهمية للنظام
+const mockData = {
+  grades: [
+    { id: 1, name: 'الصف الأول الثانوي', subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] },
+    { id: 2, name: 'الصف الثاني الثانوي', subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] },
+    { id: 3, name: 'الصف الثالث الثانوي', subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] }
+  ],
+  teachers: [
+    {
+      id: 1, name: 'أحمد محمد', gender: 'male', subjects: ['رياضيات'], 
+      rating: 4.8, reviews: 45, hourlyRate: 50,
+      avatar: '👨‍🏫', availableTimes: ['09:00', '11:00', '15:00', '17:00', '19:00']
+    },
+    {
+      id: 2, name: 'فاطمة علي', gender: 'female', subjects: ['فيزياء'], 
+      rating: 4.9, reviews: 38, hourlyRate: 45,
+      avatar: '👩‍🏫', availableTimes: ['10:00', '12:00', '16:00', '18:00']
+    },
+    {
+      id: 3, name: 'محمد سالم', gender: 'male', subjects: ['كيمياء'], 
+      rating: 4.7, reviews: 32, hourlyRate: 55,
+      avatar: '👨‍🔬', availableTimes: ['08:00', '10:00', '14:00', '16:00', '20:00']
+    },
+    {
+      id: 4, name: 'نورا حسن', gender: 'female', subjects: ['أحياء'], 
+      rating: 4.9, reviews: 42, hourlyRate: 48,
+      avatar: '👩‍⚕️', availableTimes: ['09:00', '13:00', '15:00', '19:00']
+    }
+  ]
+};
 
-        body.en {
-            direction: ltr;
-        }
+const AcademyApp = () => {
+  const [userType, setUserType] = useState('student');
+  const [currentView, setCurrentView] = useState('home');
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedGender, setSelectedGender] = useState('');
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [bookedSessions, setBookedSessions] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
-        /* Header */
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+  // محاكاة الإشعارات
+  useEffect(() => {
+    const mockNotifications = [
+      { id: 1, message: 'حصة الرياضيات تبدأ خلال 30 دقيقة', time: '09:30', type: 'session' },
+      { id: 2, message: 'تم تأكيد حجز حصة الفيزياء', time: '08:45', type: 'booking' }
+    ];
+    setNotifications(mockNotifications);
+  }, []);
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .lang-switch {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .lang-switch:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-
-        .user-type-select {
-            padding: 0.5rem 1rem;
-            border: 2px solid #667eea;
-            border-radius: 25px;
-            background: white;
-            color: #333;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            min-height: calc(100vh - 140px);
-        }
-
-        /* Dashboard Cards */
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            gap: 1rem;
-        }
-
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            margin: 0.25rem;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: #f7fafc;
-            color: #4a5568;
-            border: 2px solid #e2e8f0;
-        }
-
-        .btn-secondary:hover {
-            background: #edf2f7;
-            transform: translateY(-2px);
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #4a5568;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-        }
-
-        .modal-content {
-            background: white;
-            margin: 5% auto;
-            padding: 2rem;
-            border-radius: 20px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: #667eea;
-        }
-
-        /* Tables */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .table th,
-        .table td {
-            padding: 1rem;
-            text-align: right;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .table th {
-            background: #667eea;
-            color: white;
-            font-weight: 600;
-        }
-
-        .table tr:hover {
-            background: #f7fafc;
-        }
-
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1.5rem;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .stat-label {
-            color: #666;
-            margin-top: 0.5rem;
-        }
-
-        /* Teacher Cards */
-        .teacher-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .teacher-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .teacher-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .teacher-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .teacher-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            margin-left: 1rem;
-        }
-
-        .teacher-details h3 {
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-
-        .teacher-rating {
-            color: #f59e0b;
-        }
-
-        /* Footer */
-        .footer {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            text-align: center;
-            padding: 1.5rem;
-            margin-top: auto;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                margin: 10% auto;
-                padding: 1rem;
-            }
-        }
-
-        /* Hide sections */
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #667eea;
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            z-index: 3000;
-            animation: slideInRight 0.3s ease;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="nav-container">
-            <a href="#" class="logo" onclick="showSection('home')">
-                <span data-en="Ostaaz Online Academy | أكاديمية أستاذ أونلاين">Ostaaz Online Academy | أكاديمية أستاذ أونلاين</span>
-            </a>
-            <div class="nav-controls">
-                <button class="lang-switch" onclick="toggleLanguage()">
-                    <span id="langText">English</span>
-                </button>
-                <select class="user-type-select" id="userType" onchange="switchUserType()">
-                    <option value="student" data-en="Student">طالب</option>
-                    <option value="parent" data-en="Parent">ولي أمر</option>
-                    <option value="teacher" data-en="Teacher">مدرس</option>
-                    <option value="admin" data-en="Admin">إدارة</option>
-                </select>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Home Section -->
-        <div id="home" class="section active">
-            <div class="dashboard">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <h2 class="card-title" data-en="Welcome to Ostaaz Academy">مرحباً بك في أكاديمية أستاذ</h2>
-                    </div>
-                    <p data-en="Your gateway to quality online education with the best teachers">بوابتك للتعليم الإلكتروني المتميز مع أفضل المدرسين</p>
-                    <button class="btn" onclick="showSection('teachers')" data-en="Browse Teachers">تصفح المدرسين</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <h2 class="card-title" data-en="My Schedule">جدولي الدراسي</h2>
-                    </div>
-                    <p data-en="View your upcoming lessons and manage your time">اعرض دروسك القادمة وأدر وقتك</p>
-                    <button class="btn" onclick="showSection('schedule')" data-en="View Schedule">عرض الجدول</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h2 class="card-title" data-en="Progress Report">تقرير التقدم</h2>
-                    </div>
-                    <p data-en="Track your attendance and academic progress">تتبع حضورك وتقدمك الأكاديمي</p>
-                    <button class="btn" onclick="showSection('reports')" data-en="View Reports">عرض التقارير</button>
-                </div>
-            </div>
+  const LoginScreen = () => (
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="text-6xl mb-4">🎓</div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">أكاديمية أستاذ أونلاين</h1>
+          <p className="text-gray-600">منصة التعليم الخصوصي الرائدة</p>
         </div>
 
-        <!-- Student Section -->
-        <div id="student" class="section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <h2 class="card-title" data-en="Student Dashboard">لوحة الطالب</h2>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" data-en="Select Grade Level">اختر الصف الدراسي</label>
-                    <select class="form-control" id="gradeSelect">
-                        <option value="grade1" data-en="Grade 1">الصف الأول</option>
-                        <option value="grade2" data-en="Grade 2">الصف الثاني</option>
-                        <option value="grade3" data-en="Grade 3">الصف الثالث</option>
-                        <option value="grade4" data-en="Grade 4">الصف الرابع</option>
-                        <option value="grade5" data-en="Grade 5">الصف الخامس</option>
-                        <option value="grade6" data-en="Grade 6">الصف السادس</option>
-                        <option value="grade7" data-en="Grade 7">الصف السابع</option>
-                        <option value="grade8" data-en="Grade 8">الصف الثامن</option>
-                        <option value="grade9" data-en="Grade 9">الصف التاسع</option>
-                        <option value="grade10" data-en="Grade 10">الصف العاشر</option>
-                        <option value="grade11" data-en="Grade 11">الصف الحادي عشر</option>
-                        <option value="grade12" data-en="Grade 12">الصف الثاني عشر</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" data-en="Teacher Gender Preference">تفضيل جنس المدرس</label>
-                    <select class="form-control" id="genderFilter">
-                        <option value="all" data-en="All">الكل</option>
-                        <option value="male" data-en="Male">ذكر</option>
-                        <option value="female" data-en="Female">أنثى</option>
-                    </select>
-                </div>
-
-                <button class="btn" onclick="filterTeachers()" data-en="Find Teachers">البحث عن مدرسين</button>
-                <button class="btn btn-secondary" onclick="showMyLessons()" data-en="My Lessons">دروسي</button>
-                <button class="btn btn-secondary" onclick="showNotifications()" data-en="Notifications">الإشعارات</button>
-            </div>
+        <div className="space-y-4">
+          <button 
+            onClick={() => { setUserType('student'); setCurrentView('home'); }}
+            className="w-full bg-blue-600 text-white py-4 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-3"
+          >
+            <User size={24} />
+            دخول كطالب
+          </button>
+          <button 
+            onClick={() => { setUserType('parent'); setCurrentView('home'); }}
+            className="w-full bg-green-600 text-white py-4 rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center gap-3"
+          >
+            <Users size={24} />
+            دخول كولي أمر
+          </button>
+          <button 
+            onClick={() => { setUserType('teacher'); setCurrentView('home'); }}
+            className="w-full bg-purple-600 text-white py-4 rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-3"
+          >
+            <BookOpen size={24} />
+            دخول كمدرس
+          </button>
+          <button 
+            onClick={() => { setUserType('admin'); setCurrentView('home'); }}
+            className="w-full bg-red-600 text-white py-4 rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-3"
+          >
+            <Settings size={24} />
+            دخول كإدارة
+          </button>
         </div>
-
-        <!-- Teachers Section -->
-        <div id="teachers" class="section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    <h2 class="card-title" data-en="Available Teachers">المدرسون المتاحون</h2>
-                </div>
-                <div id="teachersGrid" class="teacher-grid">
-                    <!-- Teachers will be populated here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Schedule Section -->
-        <div id="schedule" class="section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-calendar"></i>
-                    </div>
-                    <h2 class="card-title" data-en="My Schedule">جدولي الدراسي</h2>
-                </div>
-                <div id="scheduleTable">
-                    <!-- Schedule will be populated here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Reports Section -->
-        <div id="reports" class="section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h2 class="card-title" data-en="Progress Reports">تقارير التقدم</h2>
-                </div>
-                <div id="reportsContent">
-                    <!-- Reports will be populated here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Dashboard -->
-        <div id="admin" class="section">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalStudents">247</div>
-                    <div class="stat-label" data-en="Total Students">إجمالي الطلاب</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalTeachers">42</div>
-                    <div class="stat-label" data-en="Total Teachers">إجمالي المدرسين</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalRevenue">$12,450</div>
-                    <div class="stat-label" data-en="Monthly Revenue">الإيرادات الشهرية</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="attendanceRate">87%</div>
-                    <div class="stat-label" data-en="Attendance Rate">معدل الحضور</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">
-                        <i class="fas fa-cog"></i>
-                    </div>
-                    <h2 class="card-title" data-en="Admin Controls">أدوات الإدارة</h2>
-                </div>
-                <button class="btn" onclick="manageTeachers()" data-en="Manage Teachers">إدارة المدرسين</button>
-                <button class="btn" onclick="manageStudents()" data-en="Manage Students">إدارة الطلاب</button>
-                <button class="btn" onclick="generateReports()" data-en="Generate Reports">إنشاء تقارير</button>
-            </div>
-        </div>
+      </div>
     </div>
+  );
 
-    <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div id="modalContent">
-                <!-- Modal content will be inserted here -->
-            </div>
+  const Navigation = () => (
+    <div className="bg-white shadow-lg p-4">
+      <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="text-2xl">🎓</div>
+          <h1 className="text-xl font-bold text-gray-800">أكاديمية أستاذ أونلاين</h1>
         </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 <span data-en="Ostaaz Online Academy | أكاديمية أستاذ أونلاين">Ostaaz Online Academy | أكاديمية أستاذ أونلاين</span></p>
-    </footer>
-
-    <script>
-        // Global Variables
-        let currentLang = 'ar';
-        let currentUser = 'student';
         
-        // Mock Data
-        const mockData = {
-            teachers: [
-                {
-                    id: 1,
-                    name: 'أحمد محمد',
-                    nameEn: 'Ahmed Mohamed',
-                    subject: 'رياضيات',
-                    subjectEn: 'Mathematics',
-                    gender: 'male',
-                    rating: 4.8,
-                    reviews: 124,
-                    grades: ['grade9', 'grade10', 'grade11'],
-                    price: 25,
-                    availability: ['09:00', '10:00', '14:00', '15:00']
-                },
-                {
-                    id: 2,
-                    name: 'فاطمة علي',
-                    nameEn: 'Fatma Ali',
-                    subject: 'فيزياء',
-                    subjectEn: 'Physics',
-                    gender: 'female',
-                    rating: 4.9,
-                    reviews: 98,
-                    grades: ['grade10', 'grade11', 'grade12'],
-                    price: 30,
-                    availability: ['11:00', '12:00', '16:00', '17:00']
-                },
-                {
-                    id: 3,
-                    name: 'خالد حسن',
-                    nameEn: 'Khaled Hassan',
-                    subject: 'كيمياء',
-                    subjectEn: 'Chemistry',
-                    gender: 'male',
-                    rating: 4.7,
-                    reviews: 156,
-                    grades: ['grade11', 'grade12'],
-                    price: 28,
-                    availability: ['13:00', '14:00', '18:00', '19:00']
-                },
-                {
-                    id: 4,
-                    name: 'مريم أحمد',
-                    nameEn: 'Maryam Ahmed',
-                    subject: 'انجليزي',
-                    subjectEn: 'English',
-                    gender: 'female',
-                    rating: 4.6,
-                    reviews: 89,
-                    grades: ['grade7', 'grade8', 'grade9'],
-                    price: 22,
-                    availability: ['08:00', '09:00', '15:00', '16:00']
-                }
-            ],
-            
-            lessons: [
-                {
-                    id: 1,
-                    teacherId: 1,
-                    date: '2025-09-27',
-                    time: '10:00',
-                    duration: 60,
-                    subject: 'رياضيات',
-                    subjectEn: 'Mathematics',
-                    zoomLink: 'https://zoom.us/j/123456789',
-                    status: 'scheduled',
-                    attendance: null
-                },
-                {
-                    id: 2,
-                    teacherId: 2,
-                    date: '2025-09-28',
-                    time: '14:00',
-                    duration: 60,
-                    subject: 'فيزياء',
-                    subjectEn: 'Physics',
-                    zoomLink: 'https://zoom.us/j/987654321',
-                    status: 'scheduled',
-                    attendance: null
-                }
-            ],
-            
-            attendanceRecords: [],
-            
-            payments: [],
-            
-            notifications: [
-                {
-                    id: 1,
-                    message: 'درس الرياضيات غداً في الساعة 10:00 صباحاً',
-                    messageEn: 'Mathematics lesson tomorrow at 10:00 AM',
-                    type: 'reminder',
-                    date: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    message: 'تم إضافة درس جديد في الفيزياء',
-                    messageEn: 'New Physics lesson has been added',
-                    type: 'info',
-                    date: new Date().toISOString()
-                }
-            ]
-        };
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Bell size={24} className="text-gray-600 cursor-pointer" />
+            {notifications.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                {notifications.length}
+              </span>
+            )}
+          </div>
+          <button 
+            onClick={() => setCurrentView('login')}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
+          >
+            <LogOut size={20} />
+            خروج
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
-        // Initialize Data
-        function initializeData() {
-            // Load data from localStorage or use mock data
-            const savedData = localStorage.getItem('ostaazAcademyData');
-            if (savedData) {
-                const parsedData = JSON.parse(savedData);
-                Object.assign(mockData, parsedData);
-            } else {
-                saveData();
-            }
-        }
+  const Sidebar = () => {
+    const menuItems = {
+      student: [
+        { id: 'home', label: 'الرئيسية', icon: Home },
+        { id: 'book-session', label: 'حجز حصة', icon: Calendar },
+        { id: 'my-sessions', label: 'حصصي', icon: Clock },
+        { id: 'progress', label: 'التقدم', icon: BarChart3 },
+        { id: 'billing', label: 'الحساب', icon: DollarSign }
+      ],
+      parent: [
+        { id: 'home', label: 'الرئيسية', icon: Home },
+        { id: 'children', label: 'الأطفال', icon: Users },
+        { id: 'sessions', label: 'الحصص', icon: Calendar },
+        { id: 'progress', label: 'التقدم', icon: BarChart3 },
+        { id: 'billing', label: 'الحساب', icon: DollarSign }
+      ],
+      teacher: [
+        { id: 'home', label: 'الرئيسية', icon: Home },
+        { id: 'schedule', label: 'الجدول', icon: Calendar },
+        { id: 'students', label: 'الطلاب', icon: Users },
+        { id: 'availability', label: 'المواعيد المتاحة', icon: Clock },
+        { id: 'earnings', label: 'الأرباح', icon: DollarSign }
+      ],
+      admin: [
+        { id: 'home', label: 'لوحة التحكم', icon: Home },
+        { id: 'teachers', label: 'المدرسين', icon: Users },
+        { id: 'students', label: 'الطلاب', icon: User },
+        { id: 'sessions', label: 'الحصص', icon: Calendar },
+        { id: 'finances', label: 'المالية', icon: DollarSign }
+      ]
+    };
 
-        // Save Data
-        function saveData() {
-            localStorage.setItem('ostaazAcademyData', JSON.stringify(mockData));
-        }
+    return (
+      <div className="bg-gray-50 w-64 min-h-screen p-4">
+        <div className="space-y-2">
+          {menuItems[userType]?.map(item => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setCurrentView(item.id)}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg text-right transition-colors ${
+                  currentView === item.id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'hover:bg-gray-200 text-gray-700'
+                }`}
+              >
+                <Icon size={20} />
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
-        // Language Toggle
-        function toggleLanguage() {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            document.body.className = currentLang === 'en' ? 'en' : '';
-            document.documentElement.lang = currentLang;
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            
-            document.getElementById('langText').textContent = currentLang === 'ar' ? 'English' : 'العربية';
-            
-            updateLanguage();
-        }
+  const BookSessionView = () => {
+    const [step, setStep] = useState(1);
+    
+    const filteredTeachers = mockData.teachers.filter(teacher => 
+      (!selectedSubject || teacher.subjects.includes(selectedSubject)) &&
+      (!selectedGender || teacher.gender === selectedGender)
+    );
 
-        // Update Language
-        function updateLanguage() {
-            const elements = document.querySelectorAll('[data-en]');
-            elements.forEach(element => {
-                const enText = element.getAttribute('data-en');
-                const currentText = element.textContent || element.innerHTML;
-                
-                if (currentLang === 'en') {
-                    element.setAttribute('data-ar', currentText);
-                    element.textContent = enText;
-                } else {
-                    const arText = element.getAttribute('data-ar');
-                    if (arText) {
-                        element.textContent = arText;
-                    }
-                }
-            });
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <h2 className="text-3xl font-bold mb-8 text-center">حجز حصة جديدة</h2>
+        
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          {step === 1 && (
+            <div className="space-y-6">
+              <h3 className="text-xl font-semibold mb-4">اختر الصف والمادة</h3>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">الصف الدراسي</label>
+                <select 
+                  value={selectedGrade} 
+                  onChange={(e) => setSelectedGrade(e.target.value)}
+                  className="w-full p-3 border rounded-lg"
+                >
+                  <option value="">اختر الصف</option>
+                  {mockData.grades.map(grade => (
+                    <option key={grade.id} value={grade.id}>{grade.name}</option>
+                  ))}
+                </select>
+              </div>
 
-            // Update select options
-            const selectElements = document.querySelectorAll('select option[data-en]');
-            selectElements.forEach(option => {
-                const enText = option.getAttribute('data-en');
-                const currentText = option.textContent;
-                
-                if (currentLang === 'en') {
-                    option.setAttribute('data-ar', currentText);
-                    option.textContent = enText;
-                } else {
-                    const arText = option.getAttribute('data-ar');
-                    if (arText) {
-                        option.textContent = arText;
-                    }
-                }
-            });
-        }
+              {selectedGrade && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">المادة</label>
+                  <select 
+                    value={selectedSubject} 
+                    onChange={(e) => setSelectedSubject(e.target.value)}
+                    className="w-full p-3 border rounded-lg"
+                  >
+                    <option value="">اختر المادة</option>
+                    {mockData.grades.find(g => g.id == selectedGrade)?.subjects.map(subject => (
+                      <option key={subject} value={subject}>{subject}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-        // Switch User Type
-        function switchUserType() {
-            currentUser = document.getElementById('userType').value;
-            showSection('home');
-            
-            if (currentUser === 'admin') {
-                showSection('admin');
-            }
-        }
+              <div>
+                <label className="block text-sm font-medium mb-2">نوع المدرس</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="gender" 
+                      value="male" 
+                      onChange={(e) => setSelectedGender(e.target.value)}
+                      className="mr-2"
+                    />
+                    مدرس ذكر
+                  </label>
+                  <label className="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="gender" 
+                      value="female" 
+                      onChange={(e) => setSelectedGender(e.target.value)}
+                      className="mr-2"
+                    />
+                    مدرسة أنثى
+                  </label>
+                  <label className="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="gender" 
+                      value="" 
+                      onChange={(e) => setSelectedGender(e.target.value)}
+                      className="mr-2"
+                    />
+                    أي نوع
+                  </label>
+                </div>
+              </div>
 
-        // Show Section
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Load section-specific content
-            switch(sectionId) {
-                case 'teachers':
-                    loadTeachers();
-                    break;
-                case 'schedule':
-                    loadSchedule();
-                    break;
-                case 'reports':
-                    loadReports();
-                    break;
-            }
-        }
+              {selectedSubject && (
+                <button 
+                  onClick={() => setStep(2)}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+                >
+                  التالي - اختيار المدرس
+                </button>
+              )}
+            </div>
+          )}
 
-        // Load Teachers
-        function loadTeachers() {
-            const grid = document.getElementById('teachersGrid');
-            const grade = document.getElementById('gradeSelect')?.value || 'grade10';
-            const gender = document.getElementById('genderFilter')?.value || 'all';
-            
-            let filteredTeachers = mockData.teachers.filter(teacher => {
-                const gradeMatch = teacher.grades.includes(grade);
-                const genderMatch = gender === 'all' || teacher.gender === gender;
-                return gradeMatch && genderMatch;
-            });
+          {step === 2 && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold">اختر المدرس المناسب</h3>
+                <button 
+                  onClick={() => setStep(1)}
+                  className="text-blue-600 hover:underline"
+                >
+                  العودة
+                </button>
+              </div>
 
-            grid.innerHTML = filteredTeachers.map(teacher => `
-                <div class="teacher-card">
-                    <div class="teacher-info">
-                        <div class="teacher-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="teacher-details">
-                            <h3>${currentLang === 'en' ? teacher.nameEn : teacher.name}</h3>
-                            <p>${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</p>
-                            <div class="teacher-rating">
-                                ${'★'.repeat(Math.floor(teacher.rating))} ${teacher.rating} (${teacher.reviews} ${currentLang === 'en' ? 'reviews' : 'تقييم'})
+              <div className="grid gap-4">
+                {filteredTeachers.map(teacher => (
+                  <div key={teacher.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="text-4xl">{teacher.avatar}</div>
+                        <div>
+                          <h4 className="font-semibold text-lg">{teacher.name}</h4>
+                          <p className="text-gray-600">تخصص: {teacher.subjects.join(', ')}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex items-center gap-1">
+                              <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                              <span className="text-sm">{teacher.rating}</span>
                             </div>
+                            <span className="text-sm text-gray-500">({teacher.reviews} تقييم)</span>
+                          </div>
                         </div>
+                      </div>
+                      <div className="text-left">
+                        <div className="text-lg font-semibold text-green-600">{teacher.hourlyRate} ريال/ساعة</div>
+                        <button 
+                          onClick={() => { setSelectedTeacher(teacher); setStep(3); }}
+                          className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                          اختيار
+                        </button>
+                      </div>
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <strong>${teacher.price}/${currentLang === 'en' ? 'hour' : 'ساعة'}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 3 && selectedTeacher && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold">اختر الموعد المناسب</h3>
+                <button 
+                  onClick={() => setStep(2)}
+                  className="text-blue-600 hover:underline"
+                >
+                  العودة
+                </button>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="text-3xl">{selectedTeacher.avatar}</div>
+                  <div>
+                    <h4 className="font-semibold">{selectedTeacher.name}</h4>
+                    <p className="text-gray-600">{selectedSubject}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-3">المواعيد المتاحة اليوم:</h4>
+                <div className="grid grid-cols-3 gap-3">
+                  {selectedTeacher.availableTimes.map(time => (
+                    <button
+                      key={time}
+                      onClick={() => {
+                        const newSession = {
+                          id: Date.now(),
+                          teacher: selectedTeacher.name,
+                          subject: selectedSubject,
+                          time: time,
+                          date: new Date().toLocaleDateString('ar-SA'),
+                          zoomLink: `https://zoom.us/j/${Math.random().toString().slice(2, 11)}`,
+                          status: 'scheduled'
+                        };
+                        setBookedSessions([...bookedSessions, newSession]);
+                        setStep(4);
+                      }}
+                      className="p-3 border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="text-center space-y-4">
+              <div className="text-6xl text-green-500 mb-4">✅</div>
+              <h3 className="text-2xl font-bold text-green-600">تم الحجز بنجاح!</h3>
+              <p className="text-gray-600">سيتم إرسال إشعار لك قبل موعد الحصة</p>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p><strong>المدرس:</strong> {selectedTeacher.name}</p>
+                <p><strong>المادة:</strong> {selectedSubject}</p>
+                <p><strong>التوقيت:</strong> اليوم الساعة {bookedSessions[bookedSessions.length - 1]?.time}</p>
+              </div>
+              <button 
+                onClick={() => { setStep(1); setCurrentView('my-sessions'); }}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+              >
+                عرض حصصي
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const MySessionsView = () => (
+    <div className="max-w-4xl mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-8">حصصي</h2>
+      
+      <div className="space-y-4">
+        {bookedSessions.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📚</div>
+            <h3 className="text-xl font-semibold mb-2">لا توجد حصص محجوزة</h3>
+            <p className="text-gray-600 mb-4">ابدأ رحلتك التعليمية بحجز أول حصة</p>
+            <button 
+              onClick={() => setCurrentView('book-session')}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+            >
+              احجز حصة
+            </button>
+          </div>
+        ) : (
+          bookedSessions.map(session => (
+            <div key={session.id} className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="text-3xl">👨‍🏫</div>
+                  <div>
+                    <h3 className="font-semibold text-lg">{session.subject}</h3>
+                    <p className="text-gray-600">المدرس: {session.teacher}</p>
+                    <p className="text-sm text-gray-500">{session.date} - {session.time}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {session.status === 'scheduled' && (
+                    <>
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">مجدولة</span>
+                      <a
+                        href={session.zoomLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                      >
+                        <Video size={16} />
+                        دخول الحصة
+                      </a>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+
+  const TeacherDashboard = () => (
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-8">لوحة تحكم المدرس</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <Calendar className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الحصص اليوم</h3>
+              <p className="text-2xl font-bold text-blue-600">5</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-green-100 p-3 rounded-full">
+              <Users className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الطلاب النشطون</h3>
+              <p className="text-2xl font-bold text-green-600">23</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-yellow-100 p-3 rounded-full">
+              <DollarSign className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الأرباح هذا الشهر</h3>
+              <p className="text-2xl font-bold text-yellow-600">2,340 ريال</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4">جدول الحصص القادمة</h3>
+        <div className="space-y-3">
+          {[
+            { time: '09:00', student: 'أحمد سالم', subject: 'رياضيات', status: 'confirmed' },
+            { time: '11:00', student: 'فاطمة أحمد', subject: 'رياضيات', status: 'confirmed' },
+            { time: '15:00', student: 'محمد علي', subject: 'رياضيات', status: 'pending' },
+          ].map((session, index) => (
+            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="bg-blue-100 p-2 rounded">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-medium">{session.time} - {session.subject}</p>
+                  <p className="text-sm text-gray-600">الطالب: {session.student}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full text-sm ${
+                  session.status === 'confirmed' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {session.status === 'confirmed' ? 'مؤكدة' : 'في الانتظار'}
+                </span>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center gap-1">
+                  <Video size={14} />
+                  بدء الحصة
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const AdminDashboard = () => (
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-8">لوحة تحكم الإدارة</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">إجمالي الطلاب</h3>
+              <p className="text-2xl font-bold text-blue-600">1,234</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-green-100 p-3 rounded-full">
+              <BookOpen className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">المدرسين النشطين</h3>
+              <p className="text-2xl font-bold text-green-600">87</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-purple-100 p-3 rounded-full">
+              <Calendar className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الحصص اليوم</h3>
+              <p className="text-2xl font-bold text-purple-600">156</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-yellow-100 p-3 rounded-full">
+              <DollarSign className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الإيرادات الشهرية</h3>
+              <p className="text-2xl font-bold text-yellow-600">45,680 ريال</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">أحدث التسجيلات</h3>
+          <div className="space-y-3">
+            {[
+              { name: 'سارة محمد', type: 'طالبة', time: 'منذ دقيقتين' },
+              { name: 'أحمد علي', type: 'مدرس', time: 'منذ 5 دقائق' },
+              { name: 'فاطمة سالم', type: 'ولي أمر', time: 'منذ 10 دقائق' }
+            ].map((user, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                    <User size={16} />
+                  </div>
+                  <div>
+                    <p className="font-medium">{user.name}</p>
+                    <p className="text-sm text-gray-600">{user.type}</p>
+                  </div>
+                </div>
+                <span className="text-sm text-gray-500">{user.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">الحصص الأكثر طلباً</h3>
+          <div className="space-y-3">
+            {[
+              { subject: 'رياضيات', sessions: 45, color: 'blue' },
+              { subject: 'فيزياء', sessions: 32, color: 'green' },
+              { subject: 'كيمياء', sessions: 28, color: 'purple' },
+              { subject: 'أحياء', sessions: 24, color: 'yellow' }
+            ].map((item, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <span className="font-medium">{item.subject}</span>
+                <div className="flex items-center gap-2">
+                  <div className={`w-20 h-2 bg-gray-200 rounded-full overflow-hidden`}>
+                    <div className={`h-full bg-${item.color}-500`} style={{width: `${(item.sessions/45)*100}%`}}></div>
+                  </div>
+                  <span className="text-sm text-gray-600">{item.sessions}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const ParentDashboard = () => (
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-8">لوحة تحكم ولي الأمر</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <User className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الأطفال المسجلين</h3>
+              <p className="text-2xl font-bold text-blue-600">2</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-green-100 p-3 rounded-full">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الحصص المكتملة</h3>
+              <p className="text-2xl font-bold text-green-600">28</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-yellow-100 p-3 rounded-full">
+              <DollarSign className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">الحساب الحالي</h3>
+              <p className="text-2xl font-bold text-yellow-600">1,240 ريال</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">أداء الأطفال</h3>
+          <div className="space-y-4">
+            {[
+              { name: 'أحمد سالم', grade: 'الصف الثاني الثانوي', attendance: 95, progress: 'ممتاز' },
+              { name: 'فاطمة سالم', grade: 'الصف الأول الثانوي', attendance: 88, progress: 'جيد جداً' }
+            ].map((child, index) => (
+              <div key={index} className="p-4 border rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h4 className="font-semibold">{child.name}</h4>
+                    <p className="text-sm text-gray-600">{child.grade}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    child.progress === 'ممتاز' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    {child.progress}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm">نسبة الحضور</span>
+                      <span className="text-sm font-medium">{child.attendance}%</span>
                     </div>
-                    <button class="btn" onclick="bookLesson(${teacher.id})" ${currentLang === 'en' ? 'data-en="Book Lesson"' : ''}>${currentLang === 'en' ? 'Book Lesson' : 'احجز درس'}</button>
-                    <button class="btn btn-secondary" onclick="viewTeacherProfile(${teacher.id})" ${currentLang === 'en' ? 'data-en="View Profile"' : ''}>${currentLang === 'en' ? 'View Profile' : 'عرض الملف'}</button>
-                </div>
-            `).join('');
-        }
-
-        // Filter Teachers
-        function filterTeachers() {
-            loadTeachers();
-        }
-
-        // Book Lesson
-        function bookLesson(teacherId) {
-            const teacher = mockData.teachers.find(t => t.id === teacherId);
-            if (!teacher) return;
-
-            const modalContent = `
-                <h2 ${currentLang === 'en' ? 'data-en="Book Lesson"' : ''}>${currentLang === 'en' ? 'Book Lesson' : 'احجز درس'}</h2>
-                <p><strong>${currentLang === 'en' ? 'Teacher' : 'المدرس'}:</strong> ${currentLang === 'en' ? teacher.nameEn : teacher.name}</p>
-                <p><strong>${currentLang === 'en' ? 'Subject' : 'المادة'}:</strong> ${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</p>
-                <p><strong>${currentLang === 'en' ? 'Price' : 'السعر'}:</strong> ${teacher.price}/${currentLang === 'en' ? 'hour' : 'ساعة'}</p>
-                
-                <div class="form-group">
-                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Select Date"' : ''}>${currentLang === 'en' ? 'Select Date' : 'اختر التاريخ'}</label>
-                    <input type="date" class="form-control" id="lessonDate" min="${new Date().toISOString().split('T')[0]}">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Available Times"' : ''}>${currentLang === 'en' ? 'Available Times' : 'الأوقات المتاحة'}</label>
-                    <select class="form-control" id="lessonTime">
-                        ${teacher.availability.map(time => `<option value="${time}">${time}</option>`).join('')}
-                    </select>
-                </div>
-                
-                <button class="btn" onclick="confirmBooking(${teacherId})" ${currentLang === 'en' ? 'data-en="Confirm Booking"' : ''}>${currentLang === 'en' ? 'Confirm Booking' : 'تأكيد الحجز'}</button>
-                <button class="btn btn-secondary" onclick="closeModal()" ${currentLang === 'en' ? 'data-en="Cancel"' : ''}>${currentLang === 'en' ? 'Cancel' : 'إلغاء'}</button>
-            `;
-            
-            showModal(modalContent);
-        }
-
-        // Confirm Booking
-        function confirmBooking(teacherId) {
-            const date = document.getElementById('lessonDate').value;
-            const time = document.getElementById('lessonTime').value;
-            
-            if (!date || !time) {
-                showNotification(currentLang === 'en' ? 'Please select date and time' : 'يرجى اختيار التاريخ والوقت');
-                return;
-            }
-
-            const teacher = mockData.teachers.find(t => t.id === teacherId);
-            const newLesson = {
-                id: mockData.lessons.length + 1,
-                teacherId: teacherId,
-                date: date,
-                time: time,
-                duration: 60,
-                subject: teacher.subject,
-                subjectEn: teacher.subjectEn,
-                zoomLink: `https://zoom.us/j/${Math.random().toString().substr(2, 11)}`,
-                status: 'scheduled',
-                attendance: null
-            };
-
-            mockData.lessons.push(newLesson);
-            saveData();
-            
-            closeModal();
-            showNotification(currentLang === 'en' ? 'Lesson booked successfully!' : 'تم حجز الدرس بنجاح!');
-        }
-
-        // View Teacher Profile
-        function viewTeacherProfile(teacherId) {
-            const teacher = mockData.teachers.find(t => t.id === teacherId);
-            if (!teacher) return;
-
-            const modalContent = `
-                <h2>${currentLang === 'en' ? teacher.nameEn : teacher.name}</h2>
-                <div style="margin: 1rem 0;">
-                    <div class="teacher-avatar" style="margin: 0 auto 1rem auto;">
-                        <i class="fas fa-user"></i>
+                    <div className="w-full h-2 bg-gray-200 rounded-full">
+                      <div className="h-2 bg-green-500 rounded-full" style={{width: `${child.attendance}%`}}></div>
                     </div>
+                  </div>
                 </div>
-                <p><strong>${currentLang === 'en' ? 'Subject' : 'المادة'}:</strong> ${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</p>
-                <p><strong>${currentLang === 'en' ? 'Rating' : 'التقييم'}:</strong> ${'★'.repeat(Math.floor(teacher.rating))} ${teacher.rating}/5</p>
-                <p><strong>${currentLang === 'en' ? 'Reviews' : 'عدد التقييمات'}:</strong> ${teacher.reviews}</p>
-                <p><strong>${currentLang === 'en' ? 'Price' : 'السعر'}:</strong> ${teacher.price}/${currentLang === 'en' ? 'hour' : 'ساعة'}</p>
-                <p><strong>${currentLang === 'en' ? 'Available Grades' : 'الصفوف المتاحة'}:</strong> ${teacher.grades.map(g => g.replace('grade', currentLang === 'en' ? 'Grade ' : 'الصف ')).join(', ')}</p>
-                
-                <h3 ${currentLang === 'en' ? 'data-en="Recent Reviews"' : ''}>${currentLang === 'en' ? 'Recent Reviews' : 'آراء الطلاب'}</h3>
-                <div style="background: #f7fafc; padding: 1rem; border-radius: 10px; margin: 1rem 0;">
-                    <p>"${currentLang === 'en' ? 'Excellent teacher, very patient and explains concepts clearly.' : 'مدرس ممتاز، صبور جداً ويشرح المفاهيم بوضوح.'}"</p>
-                    <small>- ${currentLang === 'en' ? 'Sarah M.' : 'سارة م.'}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">الحصص القادمة</h3>
+          <div className="space-y-3">
+            {[
+              { student: 'أحمد سالم', subject: 'رياضيات', time: '15:00', teacher: 'أحمد محمد' },
+              { student: 'فاطمة سالم', subject: 'فيزياء', time: '17:00', teacher: 'فاطمة علي' },
+              { student: 'أحمد سالم', subject: 'كيمياء', time: '19:00', teacher: 'محمد سالم' }
+            ].map((session, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium">{session.student} - {session.subject}</p>
+                  <p className="text-sm text-gray-600">المدرس: {session.teacher}</p>
                 </div>
-                <div style="background: #f7fafc; padding: 1rem; border-radius: 10px; margin: 1rem 0;">
-                    <p>"${currentLang === 'en' ? 'My grades improved significantly after taking lessons with this teacher.' : 'تحسنت درجاتي كثيراً بعد أخذ دروس مع هذا المدرس.'}"</p>
-                    <small>- ${currentLang === 'en' ? 'Ahmed K.' : 'أحمد ك.'}</small>
+                <div className="text-left">
+                  <p className="font-medium text-blue-600">{session.time}</p>
+                  <button className="text-sm text-blue-600 hover:underline">
+                    رابط الحصة
+                  </button>
                 </div>
-                
-                <button class="btn" onclick="bookLesson(${teacherId})" ${currentLang === 'en' ? 'data-en="Book Lesson"' : ''}>${currentLang === 'en' ? 'Book Lesson' : 'احجز درس'}</button>
-            `;
-            
-            showModal(modalContent);
-        }
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
-        // Load Schedule
-        function loadSchedule() {
-            const container = document.getElementById('scheduleTable');
-            const userLessons = mockData.lessons.filter(lesson => lesson.status === 'scheduled');
-            
-            if (userLessons.length === 0) {
-                container.innerHTML = `<p ${currentLang === 'en' ? 'data-en="No scheduled lessons"' : ''}>${currentLang === 'en' ? 'No scheduled lessons' : 'لا توجد دروس مجدولة'}</p>`;
-                return;
-            }
+  const BillingView = () => (
+    <div className="max-w-4xl mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-8">الحساب والفواتير</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="text-center">
+            <h3 className="font-semibold mb-2">الرصيد الحالي</h3>
+            <p className="text-3xl font-bold text-green-600">850 ريال</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="text-center">
+            <h3 className="font-semibold mb-2">إجمالي هذا الشهر</h3>
+            <p className="text-3xl font-bold text-blue-600">1,240 ريال</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="text-center">
+            <h3 className="font-semibold mb-2">الحصص المكتملة</h3>
+            <p className="text-3xl font-bold text-purple-600">28 حصة</p>
+          </div>
+        </div>
+      </div>
 
-            const tableHTML = `
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th ${currentLang === 'en' ? 'data-en="Date"' : ''}>${currentLang === 'en' ? 'Date' : 'التاريخ'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Time"' : ''}>${currentLang === 'en' ? 'Time' : 'الوقت'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Subject"' : ''}>${currentLang === 'en' ? 'Subject' : 'المادة'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Teacher"' : ''}>${currentLang === 'en' ? 'Teacher' : 'المدرس'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Actions"' : ''}>${currentLang === 'en' ? 'Actions' : 'الإجراءات'}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${userLessons.map(lesson => {
-                            const teacher = mockData.teachers.find(t => t.id === lesson.teacherId);
-                            return `
-                                <tr>
-                                    <td>${lesson.date}</td>
-                                    <td>${lesson.time}</td>
-                                    <td>${currentLang === 'en' ? lesson.subjectEn : lesson.subject}</td>
-                                    <td>${teacher ? (currentLang === 'en' ? teacher.nameEn : teacher.name) : 'Unknown'}</td>
-                                    <td>
-                                        <button class="btn" onclick="joinLesson('${lesson.zoomLink}')" ${currentLang === 'en' ? 'data-en="Join Zoom"' : ''}>${currentLang === 'en' ? 'Join Zoom' : 'دخول الزوم'}</button>
-                                        <button class="btn btn-secondary" onclick="markAttendance(${lesson.id})" ${currentLang === 'en' ? 'data-en="Mark Attendance"' : ''}>${currentLang === 'en' ? 'Mark Attendance' : 'تسجيل الحضور'}</button>
-                                    </td>
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                </table>
-            `;
-            
-            container.innerHTML = tableHTML;
-        }
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold">إضافة رصيد</h3>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          {[100, 250, 500, 1000].map(amount => (
+            <button
+              key={amount}
+              className="p-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors text-center"
+            >
+              <div className="text-lg font-bold">{amount} ريال</div>
+            </button>
+          ))}
+        </div>
+        
+        <div className="flex gap-4">
+          <input
+            type="number"
+            placeholder="مبلغ آخر"
+            className="flex-1 p-3 border rounded-lg"
+          />
+          <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+            إضافة رصيد
+          </button>
+        </div>
+      </div>
 
-        // Join Lesson
-        function joinLesson(zoomLink) {
-            window.open(zoomLink, '_blank');
-            showNotification(currentLang === 'en' ? 'Opening Zoom meeting...' : 'فتح اجتماع الزوم...');
-        }
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4">سجل المعاملات</h3>
+        <div className="space-y-3">
+          {[
+            { date: '2025-09-26', description: 'حصة رياضيات - أحمد محمد', amount: -50, type: 'payment' },
+            { date: '2025-09-26', description: 'إضافة رصيد', amount: +500, type: 'deposit' },
+            { date: '2025-09-25', description: 'حصة فيزياء - فاطمة علي', amount: -45, type: 'payment' },
+            { date: '2025-09-25', description: 'حصة كيمياء - محمد سالم', amount: -55, type: 'payment' }
+          ].map((transaction, index) => (
+            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <p className="font-medium">{transaction.description}</p>
+                <p className="text-sm text-gray-500">{transaction.date}</p>
+              </div>
+              <div className={`font-bold ${
+                transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {transaction.amount > 0 ? '+' : ''}{transaction.amount} ريال
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
-        // Mark Attendance
-        function markAttendance(lessonId) {
-            const modalContent = `
-                <h2 ${currentLang === 'en' ? 'data-en="Mark Attendance"' : ''}>${currentLang === 'en' ? 'Mark Attendance' : 'تسجيل الحضور'}</h2>
-                <div class="form-group">
-                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Attendance Status"' : ''}>${currentLang === 'en' ? 'Attendance Status' : 'حالة الحضور'}</label>
-                    <select class="form-control" id="attendanceStatus">
-                        <option value="present" ${currentLang === 'en' ? 'data-en="Present"' : ''}>${currentLang === 'en' ? 'Present' : 'حاضر'}</option>
-                        <option value="absent" ${currentLang === 'en' ? 'data-en="Absent"' : ''}>${currentLang === 'en' ? 'Absent' : 'غائب'}</option>
-                    </select>
-                </div>
-                <button class="btn" onclick="saveAttendance(${lessonId})" ${currentLang === 'en' ? 'data-en="Save"' : ''}>${currentLang === 'en' ? 'Save' : 'حفظ'}</button>
-            `;
-            
-            showModal(modalContent);
-        }
+  const NotificationCenter = () => (
+    <div className="fixed top-16 right-4 w-80 bg-white rounded-lg shadow-xl border z-50 max-h-96 overflow-y-auto">
+      <div className="p-4 border-b">
+        <h3 className="font-semibold">الإشعارات</h3>
+      </div>
+      <div className="space-y-2 p-4">
+        {notifications.map(notification => (
+          <div key={notification.id} className="p-3 border rounded-lg hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <div className={`w-2 h-2 rounded-full ${
+                notification.type === 'session' ? 'bg-blue-500' : 'bg-green-500'
+              }`}></div>
+              <div className="flex-1">
+                <p className="text-sm">{notification.message}</p>
+                <p className="text-xs text-gray-500">{notification.time}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+        {notifications.length === 0 && (
+          <p className="text-center text-gray-500 py-4">لا توجد إشعارات جديدة</p>
+        )}
+      </div>
+    </div>
+  );
 
-        // Save Attendance
-        function saveAttendance(lessonId) {
-            const status = document.getElementById('attendanceStatus').value;
-            const lesson = mockData.lessons.find(l => l.id === lessonId);
-            
-            if (lesson) {
-                lesson.attendance = status;
-                
-                // Add to attendance records
-                mockData.attendanceRecords.push({
-                    lessonId: lessonId,
-                    date: lesson.date,
-                    status: status,
-                    subject: lesson.subject
-                });
-                
-                saveData();
-                closeModal();
-                showNotification(currentLang === 'en' ? 'Attendance marked successfully!' : 'تم تسجيل الحضور بنجاح!');
-            }
-        }
-
-        // Load Reports
-        function loadReports() {
-            const container = document.getElementById('reportsContent');
-            const attendedLessons = mockData.attendanceRecords.filter(record => record.status === 'present');
-            const totalLessons = mockData.attendanceRecords.length;
-            const attendanceRate = totalLessons > 0 ? Math.round((attendedLessons.length / totalLessons) * 100) : 0;
-            const totalPayment = mockData.lessons.length * 25; // Assuming average $25 per lesson
-
-            const reportsHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number">${attendedLessons.length}</div>
-                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Lessons Attended"' : ''}>${currentLang === 'en' ? 'Lessons Attended' : 'الدروس المحضورة'}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${totalLessons}</div>
-                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Total Lessons"' : ''}>${currentLang === 'en' ? 'Total Lessons' : 'إجمالي الدروس'}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${attendanceRate}%</div>
-                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Attendance Rate"' : ''}>${currentLang === 'en' ? 'Attendance Rate' : 'معدل الحضور'}</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">${totalPayment}</div>
-                        <div class="stat-label" ${currentLang === 'en' ? 'data-en="Total Payment"' : ''}>${currentLang === 'en' ? 'Total Payment' : 'إجمالي المدفوعات'}</div>
-                    </div>
-                </div>
-                
-                <h3 ${currentLang === 'en' ? 'data-en="Monthly Progress"' : ''}>${currentLang === 'en' ? 'Monthly Progress' : 'التقدم الشهري'}</h3>
-                <div style="background: white; padding: 1rem; border-radius: 10px; margin: 1rem 0;">
-                    <canvas id="progressChart" width="400" height="200"></canvas>
-                </div>
-                
-                <button class="btn" onclick="downloadReport()" ${currentLang === 'en' ? 'data-en="Download Report"' : ''}>${currentLang === 'en' ? 'Download Report' : 'تحميل التقرير'}</button>
-                <button class="btn btn-secondary" onclick="makePayment()" ${currentLang === 'en' ? 'data-en="Make Payment"' : ''}>${currentLang === 'en' ? 'Make Payment' : 'الدفع'}</button>
-            `;
-            
-            container.innerHTML = reportsHTML;
-            drawProgressChart();
-        }
-
-        // Draw Progress Chart (Simple implementation)
-        function drawProgressChart() {
-            const canvas = document.getElementById('progressChart');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            
-            // Clear canvas
-            ctx.clearRect(0, 0, width, height);
-            
-            // Draw simple bar chart
-            ctx.fillStyle = '#667eea';
-            ctx.fillRect(50, height - 100, 60, 80);
-            ctx.fillRect(150, height - 120, 60, 100);
-            ctx.fillRect(250, height - 80, 60, 60);
-            ctx.fillRect(350, height - 140, 60, 120);
-            
-            // Draw labels
-            ctx.fillStyle = '#333';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Week 1', 80, height - 10);
-            ctx.fillText('Week 2', 180, height - 10);
-            ctx.fillText('Week 3', 280, height - 10);
-            ctx.fillText('Week 4', 380, height - 10);
-        }
-
-        // Download Report
-        function downloadReport() {
-            const reportData = {
-                attendanceRecords: mockData.attendanceRecords,
-                lessons: mockData.lessons,
-                generatedAt: new Date().toISOString()
-            };
-            
-            const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'student_report.json';
-            a.click();
-            
-            showNotification(currentLang === 'en' ? 'Report downloaded successfully!' : 'تم تحميل التقرير بنجاح!');
-        }
-
-        // Make Payment
-        function makePayment() {
-            const modalContent = `
-                <h2 ${currentLang === 'en' ? 'data-en="Make Payment"' : ''}>${currentLang === 'en' ? 'Make Payment' : 'الدفع'}</h2>
-                <p ${currentLang === 'en' ? 'data-en="Total Amount Due"' : ''}><strong>${currentLang === 'en' ? 'Total Amount Due' : 'المبلغ المطلوب'}:</strong> ${mockData.lessons.length * 25}</p>
-                
-                <div class="form-group">
-                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Payment Method"' : ''}>${currentLang === 'en' ? 'Payment Method' : 'طريقة الدفع'}</label>
-                    <select class="form-control" id="paymentMethod">
-                        <option value="credit" ${currentLang === 'en' ? 'data-en="Credit Card"' : ''}>${currentLang === 'en' ? 'Credit Card' : 'بطاقة ائتمان'}</option>
-                        <option value="bank" ${currentLang === 'en' ? 'data-en="Bank Transfer"' : ''}>${currentLang === 'en' ? 'Bank Transfer' : 'تحويل بنكي'}</option>
-                        <option value="wallet" ${currentLang === 'en' ? 'data-en="Digital Wallet"' : ''}>${currentLang === 'en' ? 'Digital Wallet' : 'محفظة رقمية'}</option>
-                    </select>
+  const renderMainContent = () => {
+    switch (currentView) {
+      case 'home':
+        if (userType === 'student') {
+          return (
+            <div className="max-w-4xl mx-auto p-6">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold mb-4">مرحباً بك في أكاديمية أستاذ أونلاين</h2>
+                <p className="text-gray-600">ابدأ رحلتك التعليمية مع أفضل المدرسين</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-2">احجز حصتك الأولى</h3>
+                  <p className="mb-4">اختر من بين أفضل المدرسين المتخصصين</p>
+                  <button 
+                    onClick={() => setCurrentView('book-session')}
+                    className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-50"
+                  >
+                    احجز الآن
+                  </button>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label" ${currentLang === 'en' ? 'data-en="Card Number"' : ''}>${currentLang === 'en' ? 'Card Number' : 'رقم البطاقة'}</label>
-                    <input type="text" class="form-control" placeholder="**** **** **** ****">
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-2">تابع تقدمك</h3>
+                  <p className="mb-4">راقب أداءك ونسبة حضورك</p>
+                  <button 
+                    onClick={() => setCurrentView('progress')}
+                    className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-50"
+                  >
+                    عرض التقدم
+                  </button>
                 </div>
-                
-                <button class="btn" onclick="processPayment()" ${currentLang === 'en' ? 'data-en="Process Payment"' : ''}>${currentLang === 'en' ? 'Process Payment' : 'معالجة الدفع'}</button>
-                <button class="btn btn-secondary" onclick="closeModal()" ${currentLang === 'en' ? 'data-en="Cancel"' : ''}>${currentLang === 'en' ? 'Cancel' : 'إلغاء'}</button>
-            `;
-            
-            showModal(modalContent);
-        }
-
-        // Process Payment
-        function processPayment() {
-            // Simulate payment processing
-            setTimeout(() => {
-                mockData.payments.push({
-                    id: mockData.payments.length + 1,
-                    amount: mockData.lessons.length * 25,
-                    date: new Date().toISOString(),
-                    method: document.getElementById('paymentMethod').value,
-                    status: 'completed'
-                });
-                
-                saveData();
-                closeModal();
-                showNotification(currentLang === 'en' ? 'Payment processed successfully!' : 'تم الدفع بنجاح!');
-            }, 2000);
-            
-            showNotification(currentLang === 'en' ? 'Processing payment...' : 'جاري معالجة الدفع...');
-        }
-
-        // Show My Lessons
-        function showMyLessons() {
-            showSection('schedule');
-        }
-
-        // Show Notifications
-        function showNotifications() {
-            const modalContent = `
-                <h2 ${currentLang === 'en' ? 'data-en="Notifications"' : ''}>${currentLang === 'en' ? 'Notifications' : 'الإشعارات'}</h2>
-                <div style="max-height: 400px; overflow-y: auto;">
-                    ${mockData.notifications.map(notification => `
-                        <div style="background: #f7fafc; padding: 1rem; border-radius: 10px; margin: 1rem 0; border-left: 4px solid #667eea;">
-                            <p>${currentLang === 'en' ? notification.messageEn : notification.message}</p>
-                            <small style="color: #666;">${new Date(notification.date).toLocaleDateString()}</small>
+              </div>
+              
+              {bookedSessions.length > 0 && (
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h3 className="text-xl font-semibold mb-4">الحصص القادمة</h3>
+                  <div className="space-y-3">
+                    {bookedSessions.slice(0, 3).map(session => (
+                      <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Clock className="text-blue-500" size={20} />
+                          <div>
+                            <p className="font-medium">{session.subject}</p>
+                            <p className="text-sm text-gray-600">{session.date} - {session.time}</p>
+                          </div>
                         </div>
-                    `).join('')}
+                        <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center gap-1">
+                          <Video size={14} />
+                          انضم
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-            `;
-            
-            showModal(modalContent);
+              )}
+            </div>
+          );
+        } else if (userType === 'parent') {
+          return <ParentDashboard />;
+        } else if (userType === 'teacher') {
+          return <TeacherDashboard />;
+        } else if (userType === 'admin') {
+          return <AdminDashboard />;
         }
-
-        // Admin Functions
-        function manageTeachers() {
-            const modalContent = `
-                <h2 ${currentLang === 'en' ? 'data-en="Manage Teachers"' : ''}>${currentLang === 'en' ? 'Manage Teachers' : 'إدارة المدرسين'}</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th ${currentLang === 'en' ? 'data-en="Name"' : ''}>${currentLang === 'en' ? 'Name' : 'الاسم'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Subject"' : ''}>${currentLang === 'en' ? 'Subject' : 'المادة'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Rating"' : ''}>${currentLang === 'en' ? 'Rating' : 'التقييم'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Students"' : ''}>${currentLang === 'en' ? 'Students' : 'الطلاب'}</th>
-                            <th ${currentLang === 'en' ? 'data-en="Actions"' : ''}>${currentLang === 'en' ? 'Actions' : 'الإجراءات'}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${mockData.teachers.map(teacher => `
-                            <tr>
-                                <td>${currentLang === 'en' ? teacher.nameEn : teacher.name}</td>
-                                <td>${currentLang === 'en' ? teacher.subjectEn : teacher.subject}</td>
-                                <td>${teacher.rating}</td>
-                                <td>${Math.floor(Math.random() * 20) + 5}</td>
-                                <td>
-                                    <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" ${currentLang === 'en' ? 'data-en="Edit"' : ''}>${currentLang === 'en' ? 'Edit' : 'تعديل'}</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+        break;
+      case 'book-session':
+        return <BookSessionView />;
+      case 'my-sessions':
+        return <MySessionsView />;
+      case 'billing':
+        return <BillingView />;
+      case 'progress':
+        return (
+          <div className="max-w-4xl mx-auto p-6">
+            <h2 className="text-3xl font-bold mb-8">تقرير التقدم</h2>
             
-            showModal(modalContent);
-        }
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-4xl mb-2">📊</div>
+                <h3 className="font-semibold">نسبة الحضور</h3>
+                <p className="text-2xl font-bold text-green-600">94%</p>
+              </div>
+              
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-4xl mb-2">⭐</div>
+                <h3 className="font-semibold">متوسط الدرجات</h3>
+                <p className="text-2xl font-bold text-blue-600">85%</p>
+              </div>
+              
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-4xl mb-2">🎯</div>
+                <h3 className="font-semibold">المستوى العام</h3>
+                <p className="text-2xl font-bold text-purple-600">ممتاز</p>
+              </div>
+            </div>
 
-        function manageStudents() {
-            const modalContent = `
-                <h2 ${currentLang === 'en' ? 'data-en="Manage Students"' : ''}>${currentLang === 'en' ? 'Manage Students' : 'إدارة الطلاب'}</h2>
-                <div style="text-align: center; padding: 2rem;">
-                    <p ${currentLang === 'en' ? 'data-en="Student management interface would be implemented here"' : ''}>${currentLang === 'en' ? 'Student management interface would be implemented here' : 'سيتم تنفيذ واجهة إدارة الطلاب هنا'}</p>
-                </div>
-            `;
-            
-            showModal(modalContent);
-        }
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-xl font-semibold mb-4">الأداء بالمواد</h3>
+              <div className="space-y-4">
+                {[
+                  { subject: 'رياضيات', score: 88, trend: 'up', sessions: 12 },
+                  { subject: 'فيزياء', score: 82, trend: 'up', sessions: 8 },
+                  { subject: 'كيمياء', score: 85, trend: 'stable', sessions: 6 },
+                  { subject: 'أحياء', score: 90, trend: 'up', sessions: 4 }
+                ].map((subject, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <BookOpen className="text-blue-600" size={20} />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">{subject.subject}</h4>
+                        <p className="text-sm text-gray-600">{subject.sessions} حصة</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-lg">{subject.score}%</span>
+                        <span className={`text-sm ${
+                          subject.trend === 'up' ? 'text-green-500' : 
+                          subject.trend === 'down' ? 'text-red-500' : 'text-gray-500'
+                        }`}>
+                          {subject.trend === 'up' ? '↗️' : subject.trend === 'down' ? '↘️' : '➡️'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <div className="max-w-4xl mx-auto p-6">
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🚧</div>
+              <h2 className="text-2xl font-bold mb-2">قيد التطوير</h2>
+              <p className="text-gray-600">هذا القسم قيد التطوير وسيكون متاحاً قريباً</p>
+            </div>
+          </div>
+        );
+    }
+  };
 
-        function generateReports() {
-            const modalContent = `
-                <h2 ${currentLang === 'en' ? 'data-en="Generate Reports"' : ''}>${currentLang === 'en' ? 'Generate Reports' : 'إنشاء التقارير'}</h2>
-                <div style="text-align: center; padding: 2rem;">
-                    <p ${currentLang === 'en' ? 'data-en="Report generation interface would be implemented here"' : ''}>${currentLang === 'en' ? 'Report generation interface would be implemented here' : 'سيتم تنفيذ واجهة إنشاء التقارير هنا'}</p>
-                </div>
-            `;
-            
-            showModal(modalContent);
-        }
+  if (currentView === 'login' || !userType) {
+    return <LoginScreen />;
+  }
 
-        // Utility Functions
-        function showModal(content) {
-            document.getElementById('modalContent').innerHTML = content;
-            document.getElementById('modal').style.display = 'block';
-        }
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Navigation />
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1">
+          {renderMainContent()}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeData();
-            loadTeachers();
-            
-            // Close modal when clicking outside
-            window.onclick = function(event) {
-                const modal = document.getElementById('modal');
-                if (event.target === modal) {
-                    closeModal();
-                }
-            };
-            
-            // Show welcome notification
-            setTimeout(() => {
-                showNotification(currentLang === 'en' ? 'Welcome to Ostaaz Online Academy!' : 'مرحباً بك في أكاديمية أستاذ أونلاين!');
-            }, 1000);
-        });
-    </script>
-</body>
-</html>
+export default AcademyApp;
