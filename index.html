@@ -1,31 +1,429 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Star, User, Users, BookOpen, DollarSign, Bell, Video, CheckCircle, XCircle, BarChart3, Home, Settings, LogOut, Phone, MessageCircle } from 'lucide-react';
+const TeacherDashboard = () => (
+    <div className={`max-w-6xl mx-auto p-6 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <h2 className="text-3xl font-bold mb-8">{language === 'ar' ? 'لوحة تحكم المدرس' : 'Teacher Dashboard'}</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <Calendar className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'الحصص اليوم' : 'Today\'s Sessions'}</h3>
+              <p className="text-2xl font-bold text-blue-600">5</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-green-100 p-3 rounded-full">
+              <Users className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'الطلاب النشطون' : 'Active Students'}</h3>
+              <p className="text-2xl font-bold text-green-600">23</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-yellow-100 p-3 rounded-full">
+              <DollarSign className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'الأرباح هذا الشهر' : 'This Month\'s Earnings'}</h3>
+              <p className="text-2xl font-bold text-yellow-600">2,340 {t.common.riyal}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4">{language === 'ar' ? 'جدول الحصص القادمة' : 'Upcoming Sessions Schedule'}</h3>
+        <div className="space-y-3">
+          {[
+            { time: '09:00', student: language === 'ar' ? 'أحمد سالم' : 'Ahmed Salem', subject: language === 'ar' ? 'رياضيات' : 'Mathematics', status: 'confirmed' },
+            { time: '11:00', student: language === 'ar' ? 'فاطمة أحمد' : 'Fatima Ahmed', subject: language === 'ar' ? 'رياضيات' : 'Mathematics', status: 'confirmed' },
+            { time: '15:00', student: language === 'ar' ? 'محمد علي' : 'Mohammed Ali', subject: language === 'ar' ? 'رياضيات' : 'Mathematics', status: 'pending' },
+          ].map((session, index) => (
+            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="bg-blue-100 p-2 rounded">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-medium">{session.time} - {session.subject}</p>
+                  <p className="text-sm text-gray-600">{t.common.student}: {session.student}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full text-sm ${
+                  session.status === 'confirmed' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {session.status === 'confirmed' 
+                    ? (language === 'ar' ? 'مؤكدة' : 'Confirmed')
+                    : (language === 'ar' ? 'في الانتظار' : 'Pending')
+                  }
+                </span>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center gap-1">
+                  <Video size={14} />
+                  {language === 'ar' ? 'بدء الحصة' : 'Start Session'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const ParentDashboard = () => (
+    <div className={`max-w-6xl mx-auto p-6 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <h2 className="text-3xl font-bold mb-8">{language === 'ar' ? 'لوحة تحكم ولي الأمر' : 'Parent Dashboard'}</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <User className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'الأطفال المسجلين' : 'Registered Children'}</h3>
+              <p className="text-2xl font-bold text-blue-600">2</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-green-100 p-3 rounded-full">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{t.common.completedSessions}</h3>
+              <p className="text-2xl font-bold text-green-600">28</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-yellow-100 p-3 rounded-full">
+              <DollarSign className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{t.common.currentBalance}</h3>
+              <p className="text-2xl font-bold text-yellow-600">1,240 {t.common.riyal}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">{language === 'ar' ? 'أداء الأطفال' : 'Children\'s Performance'}</h3>
+          <div className="space-y-4">
+            {[
+              { name: language === 'ar' ? 'أحمد سالم' : 'Ahmed Salem', grade: mockData.grades[1].name[language], attendance: 95, progress: t.common.excellent },
+              { name: language === 'ar' ? 'فاطمة سالم' : 'Fatima Salem', grade: mockData.grades[0].name[language], attendance: 88, progress: language === 'ar' ? 'جيد جداً' : 'Very Good' }
+            ].map((child, index) => (
+              <div key={index} className="p-4 border rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h4 className="font-semibold">{child.name}</h4>
+                    <p className="text-sm text-gray-600">{child.grade}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    child.progress === t.common.excellent ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    {child.progress}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm">{t.common.attendanceRate}</span>
+                      <span className="text-sm font-medium">{child.attendance}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 rounded-full">
+                      <div className="h-2 bg-green-500 rounded-full" style={{width: `${child.attendance}%`}}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">{t.common.upcomingSessions}</h3>
+          <div className="space-y-3">
+            {[
+              { student: language === 'ar' ? 'أحمد سالم' : 'Ahmed Salem', subject: language === 'ar' ? 'رياضيات' : 'Mathematics', time: '15:00', teacher: mockData.teachers[0].name[language] },
+              { student: language === 'ar' ? 'فاطمة سالم' : 'Fatima Salem', subject: language === 'ar' ? 'فيزياء' : 'Physics', time: '17:00', teacher: mockData.teachers[1].name[language] },
+              { student: language === 'ar' ? 'أحمد سالم' : 'Ahmed Salem', subject: language === 'ar' ? 'كيمياء' : 'Chemistry', time: '19:00', teacher: mockData.teachers[2].name[language] }
+            ].map((session, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div>
+                  <p className="font-medium">{session.student} - {session.subject}</p>
+                  <p className="text-sm text-gray-600">{t.common.teacher}: {session.teacher}</p>
+                </div>
+                <div className={`${isRTL ? 'text-right' : 'text-left'}`}>
+                  <p className="font-medium text-blue-600">{session.time}</p>
+                  <button className="text-sm text-blue-600 hover:underline">
+                    {language === 'ar' ? 'رابط الحصة' : 'Session Link'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const AdminDashboard = () => (
+    <div className={`max-w-6xl mx-auto p-6 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <h2 className="text-3xl font-bold mb-8">{t.navigation.dashboard}</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-100 p-3 rounded-full">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'إجمالي الطلاب' : 'Total Students'}</h3>
+              <p className="text-2xl font-bold text-blue-600">1,234</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-green-100 p-3 rounded-full">
+              <BookOpen className="w-6 h-6 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'المدرسين النشطين' : 'Active Teachers'}</h3>
+              <p className="text-2xl font-bold text-green-600">87</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-purple-100 p-3 rounded-full">
+              <Calendar className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'الحصص اليوم' : 'Today\'s Sessions'}</h3>
+              <p className="text-2xl font-bold text-purple-600">156</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-yellow-100 p-3 rounded-full">
+              <DollarSign className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold">{language === 'ar' ? 'الإيرادات الشهرية' : 'Monthly Revenue'}</h3>
+              <p className="text-2xl font-bold text-yellow-600">45,680 {t.common.riyal}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">{language === 'ar' ? 'أحدث التسجيلات' : 'Latest Registrations'}</h3>
+          <div className="space-y-3">
+            {[
+              { name: language === 'ar' ? 'سارة محمد' : 'Sarah Mohammed', type: language === 'ar' ? 'طالبة' : 'Student', time: language === 'ar' ? 'منذ دقيقتين' : '2 minutes ago' },
+              { name: language === 'ar' ? 'أحمدimport React, { useState, useEffect } from 'react';
+import { Calendar, Clock, Star, User, Users, BookOpen, DollarSign, Bell, Video, CheckCircle, XCircle, BarChart3, Home, Settings, LogOut, Phone, MessageCircle, Globe, ChevronDown } from 'lucide-react';
+
+// ترجمات النظام
+const translations = {
+  ar: {
+    appName: 'أكاديمية أستاذ أونلاين',
+    appDescription: 'منصة التعليم الخصوصي الرائدة',
+    login: {
+      student: 'دخول كطالب',
+      parent: 'دخول كولي أمر', 
+      teacher: 'دخول كمدرس',
+      admin: 'دخول كإدارة'
+    },
+    navigation: {
+      home: 'الرئيسية',
+      bookSession: 'حجز حصة',
+      mySessions: 'حصصي',
+      progress: 'التقدم',
+      billing: 'الحساب',
+      children: 'الأطفال',
+      sessions: 'الحصص',
+      schedule: 'الجدول',
+      students: 'الطلاب',
+      availability: 'المواعيد المتاحة',
+      earnings: 'الأرباح',
+      dashboard: 'لوحة التحكم',
+      teachers: 'المدرسين',
+      finances: 'المالية',
+      logout: 'خروج',
+      notifications: 'الإشعارات'
+    },
+    common: {
+      next: 'التالي',
+      back: 'العودة',
+      book: 'احجز',
+      bookNow: 'احجز الآن',
+      confirm: 'تأكيد',
+      cancel: 'إلغاء',
+      save: 'حفظ',
+      today: 'اليوم',
+      time: 'الوقت',
+      date: 'التاريخ',
+      subject: 'المادة',
+      teacher: 'المدرس',
+      student: 'الطالب',
+      grade: 'الصف',
+      rating: 'التقييم',
+      price: 'السعر',
+      hourly: 'ساعة',
+      riyal: 'ريال',
+      status: 'الحالة',
+      welcome: 'مرحباً بك في',
+      startJourney: 'ابدأ رحلتك التعليمية مع أفضل المدرسين',
+      bookFirst: 'احجز حصتك الأولى',
+      chooseBest: 'اختر من بين أفضل المدرسين المتخصصين',
+      trackProgress: 'تابع تقدمك',
+      monitorPerformance: 'راقب أداءك ونسبة حضورك',
+      upcomingSessions: 'الحصص القادمة',
+      noSessions: 'لا توجد حصص محجوزة',
+      bookingSuccess: 'تم الحجز بنجاح!',
+      selectGrade: 'اختر الصف',
+      selectSubject: 'اختر المادة',
+      maleTeacher: 'مدرس ذكر',
+      femaleTeacher: 'مدرسة أنثى',
+      anyGender: 'أي نوع',
+      availableToday: 'المواعيد المتاحة اليوم',
+      currentBalance: 'الرصيد الحالي',
+      totalThisMonth: 'إجمالي هذا الشهر',
+      completedSessions: 'الحصص المكتملة',
+      addBalance: 'إضافة رصيد',
+      attendanceRate: 'نسبة الحضور',
+      averageGrades: 'متوسط الدرجات',
+      generalLevel: 'المستوى العام',
+      excellent: 'ممتاز',
+      performanceBySubject: 'الأداء بالمواد'
+    }
+  },
+  en: {
+    appName: 'Ustad Online Academy',
+    appDescription: 'Leading Private Tutoring Platform',
+    login: {
+      student: 'Login as Student',
+      parent: 'Login as Parent',
+      teacher: 'Login as Teacher', 
+      admin: 'Login as Admin'
+    },
+    navigation: {
+      home: 'Home',
+      bookSession: 'Book Session',
+      mySessions: 'My Sessions',
+      progress: 'Progress',
+      billing: 'Billing',
+      children: 'Children',
+      sessions: 'Sessions',
+      schedule: 'Schedule',
+      students: 'Students',
+      availability: 'Availability',
+      earnings: 'Earnings',
+      dashboard: 'Dashboard',
+      teachers: 'Teachers',
+      finances: 'Finances',
+      logout: 'Logout',
+      notifications: 'Notifications'
+    },
+    common: {
+      next: 'Next',
+      back: 'Back',
+      book: 'Book',
+      bookNow: 'Book Now',
+      confirm: 'Confirm',
+      cancel: 'Cancel',
+      save: 'Save',
+      today: 'Today',
+      time: 'Time',
+      date: 'Date',
+      subject: 'Subject',
+      teacher: 'Teacher',
+      student: 'Student',
+      grade: 'Grade',
+      rating: 'Rating',
+      price: 'Price',
+      hourly: 'hour',
+      riyal: 'SAR',
+      status: 'Status',
+      welcome: 'Welcome to',
+      startJourney: 'Start your educational journey with the best teachers',
+      bookFirst: 'Book your first session',
+      chooseBest: 'Choose from the best specialized teachers',
+      trackProgress: 'Track your progress',
+      monitorPerformance: 'Monitor your performance and attendance',
+      upcomingSessions: 'Upcoming Sessions',
+      noSessions: 'No booked sessions',
+      bookingSuccess: 'Booking Successful!',
+      selectGrade: 'Select Grade',
+      selectSubject: 'Select Subject',
+      maleTeacher: 'Male Teacher',
+      femaleTeacher: 'Female Teacher',
+      anyGender: 'Any Gender',
+      availableToday: 'Available Today',
+      currentBalance: 'Current Balance',
+      totalThisMonth: 'Total This Month',
+      completedSessions: 'Completed Sessions',
+      addBalance: 'Add Balance',
+      attendanceRate: 'Attendance Rate',
+      averageGrades: 'Average Grades',
+      generalLevel: 'General Level',
+      excellent: 'Excellent',
+      performanceBySubject: 'Performance by Subject'
+    }
+  }
+};
 
 // بيانات وهمية للنظام
 const mockData = {
   grades: [
-    { id: 1, name: 'الصف الأول الثانوي', subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] },
-    { id: 2, name: 'الصف الثاني الثانوي', subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] },
-    { id: 3, name: 'الصف الثالث الثانوي', subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] }
+    { id: 1, name: { ar: 'الصف الأول الثانوي', en: 'Grade 10' }, subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] },
+    { id: 2, name: { ar: 'الصف الثاني الثانوي', en: 'Grade 11' }, subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] },
+    { id: 3, name: { ar: 'الصف الثالث الثانوي', en: 'Grade 12' }, subjects: ['رياضيات', 'فيزياء', 'كيمياء', 'أحياء', 'لغة عربية', 'لغة إنجليزية'] }
   ],
   teachers: [
     {
-      id: 1, name: 'أحمد محمد', gender: 'male', subjects: ['رياضيات'], 
+      id: 1, name: { ar: 'أحمد محمد', en: 'Ahmed Mohammed' }, gender: 'male', subjects: ['رياضيات'], 
       rating: 4.8, reviews: 45, hourlyRate: 50,
       avatar: '👨‍🏫', availableTimes: ['09:00', '11:00', '15:00', '17:00', '19:00']
     },
     {
-      id: 2, name: 'فاطمة علي', gender: 'female', subjects: ['فيزياء'], 
+      id: 2, name: { ar: 'فاطمة علي', en: 'Fatima Ali' }, gender: 'female', subjects: ['فيزياء'], 
       rating: 4.9, reviews: 38, hourlyRate: 45,
       avatar: '👩‍🏫', availableTimes: ['10:00', '12:00', '16:00', '18:00']
     },
     {
-      id: 3, name: 'محمد سالم', gender: 'male', subjects: ['كيمياء'], 
+      id: 3, name: { ar: 'محمد سالم', en: 'Mohammed Salem' }, gender: 'male', subjects: ['كيمياء'], 
       rating: 4.7, reviews: 32, hourlyRate: 55,
       avatar: '👨‍🔬', availableTimes: ['08:00', '10:00', '14:00', '16:00', '20:00']
     },
     {
-      id: 4, name: 'نورا حسن', gender: 'female', subjects: ['أحياء'], 
+      id: 4, name: { ar: 'نورا حسن', en: 'Nora Hassan' }, gender: 'female', subjects: ['أحياء'], 
       rating: 4.9, reviews: 42, hourlyRate: 48,
       avatar: '👩‍⚕️', availableTimes: ['09:00', '13:00', '15:00', '19:00']
     }
@@ -41,23 +439,44 @@ const AcademyApp = () => {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [bookedSessions, setBookedSessions] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [language, setLanguage] = useState('ar');
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const t = translations[language];
+  const isRTL = language === 'ar';
 
   // محاكاة الإشعارات
   useEffect(() => {
     const mockNotifications = [
-      { id: 1, message: 'حصة الرياضيات تبدأ خلال 30 دقيقة', time: '09:30', type: 'session' },
-      { id: 2, message: 'تم تأكيد حجز حصة الفيزياء', time: '08:45', type: 'booking' }
+      { id: 1, message: language === 'ar' ? 'حصة الرياضيات تبدأ خلال 30 دقيقة' : 'Math session starts in 30 minutes', time: '09:30', type: 'session' },
+      { id: 2, message: language === 'ar' ? 'تم تأكيد حجز حصة الفيزياء' : 'Physics session booking confirmed', time: '08:45', type: 'booking' }
     ];
     setNotifications(mockNotifications);
-  }, []);
+  }, [language]);
+
+  const LanguageSwitcher = () => (
+    <div className="relative">
+      <button 
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 px-3 py-2 rounded-lg hover:bg-gray-100"
+        onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
+      >
+        <Globe size={20} />
+        <span>{language === 'ar' ? 'English' : 'عربي'}</span>
+      </button>
+    </div>
+  );
 
   const LoginScreen = () => (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center p-4">
+    <div className={`min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center p-4 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
+        
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🎓</div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">أكاديمية أستاذ أونلاين</h1>
-          <p className="text-gray-600">منصة التعليم الخصوصي الرائدة</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{t.appName}</h1>
+          <p className="text-gray-600">{t.appDescription}</p>
         </div>
 
         <div className="space-y-4">
@@ -66,28 +485,28 @@ const AcademyApp = () => {
             className="w-full bg-blue-600 text-white py-4 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-3"
           >
             <User size={24} />
-            دخول كطالب
+            {t.login.student}
           </button>
           <button 
             onClick={() => { setUserType('parent'); setCurrentView('home'); }}
             className="w-full bg-green-600 text-white py-4 rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center gap-3"
           >
             <Users size={24} />
-            دخول كولي أمر
+            {t.login.parent}
           </button>
           <button 
             onClick={() => { setUserType('teacher'); setCurrentView('home'); }}
             className="w-full bg-purple-600 text-white py-4 rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-3"
           >
             <BookOpen size={24} />
-            دخول كمدرس
+            {t.login.teacher}
           </button>
           <button 
             onClick={() => { setUserType('admin'); setCurrentView('home'); }}
             className="w-full bg-red-600 text-white py-4 rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-3"
           >
             <Settings size={24} />
-            دخول كإدارة
+            {t.login.admin}
           </button>
         </div>
       </div>
@@ -95,28 +514,35 @@ const AcademyApp = () => {
   );
 
   const Navigation = () => (
-    <div className="bg-white shadow-lg p-4">
+    <div className={`bg-white shadow-lg p-4 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="text-2xl">🎓</div>
-          <h1 className="text-xl font-bold text-gray-800">أكاديمية أستاذ أونلاين</h1>
+          <h1 className="text-xl font-bold text-gray-800">{t.appName}</h1>
         </div>
         
         <div className="flex items-center gap-4">
+          <LanguageSwitcher />
           <div className="relative">
-            <Bell size={24} className="text-gray-600 cursor-pointer" />
-            {notifications.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                {notifications.length}
-              </span>
-            )}
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative"
+            >
+              <Bell size={24} className="text-gray-600 cursor-pointer hover:text-gray-800" />
+              {notifications.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {notifications.length}
+                </span>
+              )}
+            </button>
+            {showNotifications && <NotificationCenter />}
           </div>
           <button 
-            onClick={() => setCurrentView('login')}
+            onClick={() => {setCurrentView('login'); setUserType('');}}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
           >
             <LogOut size={20} />
-            خروج
+            {t.navigation.logout}
           </button>
         </div>
       </div>
@@ -126,37 +552,37 @@ const AcademyApp = () => {
   const Sidebar = () => {
     const menuItems = {
       student: [
-        { id: 'home', label: 'الرئيسية', icon: Home },
-        { id: 'book-session', label: 'حجز حصة', icon: Calendar },
-        { id: 'my-sessions', label: 'حصصي', icon: Clock },
-        { id: 'progress', label: 'التقدم', icon: BarChart3 },
-        { id: 'billing', label: 'الحساب', icon: DollarSign }
+        { id: 'home', label: t.navigation.home, icon: Home },
+        { id: 'book-session', label: t.navigation.bookSession, icon: Calendar },
+        { id: 'my-sessions', label: t.navigation.mySessions, icon: Clock },
+        { id: 'progress', label: t.navigation.progress, icon: BarChart3 },
+        { id: 'billing', label: t.navigation.billing, icon: DollarSign }
       ],
       parent: [
-        { id: 'home', label: 'الرئيسية', icon: Home },
-        { id: 'children', label: 'الأطفال', icon: Users },
-        { id: 'sessions', label: 'الحصص', icon: Calendar },
-        { id: 'progress', label: 'التقدم', icon: BarChart3 },
-        { id: 'billing', label: 'الحساب', icon: DollarSign }
+        { id: 'home', label: t.navigation.home, icon: Home },
+        { id: 'children', label: t.navigation.children, icon: Users },
+        { id: 'sessions', label: t.navigation.sessions, icon: Calendar },
+        { id: 'progress', label: t.navigation.progress, icon: BarChart3 },
+        { id: 'billing', label: t.navigation.billing, icon: DollarSign }
       ],
       teacher: [
-        { id: 'home', label: 'الرئيسية', icon: Home },
-        { id: 'schedule', label: 'الجدول', icon: Calendar },
-        { id: 'students', label: 'الطلاب', icon: Users },
-        { id: 'availability', label: 'المواعيد المتاحة', icon: Clock },
-        { id: 'earnings', label: 'الأرباح', icon: DollarSign }
+        { id: 'home', label: t.navigation.home, icon: Home },
+        { id: 'schedule', label: t.navigation.schedule, icon: Calendar },
+        { id: 'students', label: t.navigation.students, icon: Users },
+        { id: 'availability', label: t.navigation.availability, icon: Clock },
+        { id: 'earnings', label: t.navigation.earnings, icon: DollarSign }
       ],
       admin: [
-        { id: 'home', label: 'لوحة التحكم', icon: Home },
-        { id: 'teachers', label: 'المدرسين', icon: Users },
-        { id: 'students', label: 'الطلاب', icon: User },
-        { id: 'sessions', label: 'الحصص', icon: Calendar },
-        { id: 'finances', label: 'المالية', icon: DollarSign }
+        { id: 'home', label: t.navigation.dashboard, icon: Home },
+        { id: 'teachers', label: t.navigation.teachers, icon: Users },
+        { id: 'students', label: t.navigation.students, icon: User },
+        { id: 'sessions', label: t.navigation.sessions, icon: Calendar },
+        { id: 'finances', label: t.navigation.finances, icon: DollarSign }
       ]
     };
 
     return (
-      <div className="bg-gray-50 w-64 min-h-screen p-4">
+      <div className={`bg-gray-50 w-64 min-h-screen p-4 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="space-y-2">
           {menuItems[userType]?.map(item => {
             const Icon = item.icon;
@@ -164,7 +590,7 @@ const AcademyApp = () => {
               <button
                 key={item.id}
                 onClick={() => setCurrentView(item.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg text-right transition-colors ${
+                className={`w-full flex items-center gap-3 p-3 rounded-lg ${isRTL ? 'text-right' : 'text-left'} transition-colors ${
                   currentView === item.id 
                     ? 'bg-blue-600 text-white' 
                     : 'hover:bg-gray-200 text-gray-700'
@@ -189,37 +615,37 @@ const AcademyApp = () => {
     );
 
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <h2 className="text-3xl font-bold mb-8 text-center">حجز حصة جديدة</h2>
+      <div className={`max-w-4xl mx-auto p-6 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <h2 className="text-3xl font-bold mb-8 text-center">{language === 'ar' ? 'حجز حصة جديدة' : 'Book New Session'}</h2>
         
         <div className="bg-white rounded-xl shadow-lg p-6">
           {step === 1 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold mb-4">اختر الصف والمادة</h3>
+              <h3 className="text-xl font-semibold mb-4">{language === 'ar' ? 'اختر الصف والمادة' : 'Choose Grade and Subject'}</h3>
               
               <div>
-                <label className="block text-sm font-medium mb-2">الصف الدراسي</label>
+                <label className="block text-sm font-medium mb-2">{language === 'ar' ? 'الصف الدراسي' : 'Academic Grade'}</label>
                 <select 
                   value={selectedGrade} 
                   onChange={(e) => setSelectedGrade(e.target.value)}
                   className="w-full p-3 border rounded-lg"
                 >
-                  <option value="">اختر الصف</option>
+                  <option value="">{t.common.selectGrade}</option>
                   {mockData.grades.map(grade => (
-                    <option key={grade.id} value={grade.id}>{grade.name}</option>
+                    <option key={grade.id} value={grade.id}>{grade.name[language]}</option>
                   ))}
                 </select>
               </div>
 
               {selectedGrade && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">المادة</label>
+                  <label className="block text-sm font-medium mb-2">{t.common.subject}</label>
                   <select 
                     value={selectedSubject} 
                     onChange={(e) => setSelectedSubject(e.target.value)}
                     className="w-full p-3 border rounded-lg"
                   >
-                    <option value="">اختر المادة</option>
+                    <option value="">{t.common.selectSubject}</option>
                     {mockData.grades.find(g => g.id == selectedGrade)?.subjects.map(subject => (
                       <option key={subject} value={subject}>{subject}</option>
                     ))}
@@ -228,7 +654,7 @@ const AcademyApp = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-2">نوع المدرس</label>
+                <label className="block text-sm font-medium mb-2">{language === 'ar' ? 'نوع المدرس' : 'Teacher Type'}</label>
                 <div className="flex gap-4">
                   <label className="flex items-center">
                     <input 
@@ -236,9 +662,9 @@ const AcademyApp = () => {
                       name="gender" 
                       value="male" 
                       onChange={(e) => setSelectedGender(e.target.value)}
-                      className="mr-2"
+                      className={`${isRTL ? 'ml-2' : 'mr-2'}`}
                     />
-                    مدرس ذكر
+                    {t.common.maleTeacher}
                   </label>
                   <label className="flex items-center">
                     <input 
@@ -246,9 +672,9 @@ const AcademyApp = () => {
                       name="gender" 
                       value="female" 
                       onChange={(e) => setSelectedGender(e.target.value)}
-                      className="mr-2"
+                      className={`${isRTL ? 'ml-2' : 'mr-2'}`}
                     />
-                    مدرسة أنثى
+                    {t.common.femaleTeacher}
                   </label>
                   <label className="flex items-center">
                     <input 
@@ -256,9 +682,9 @@ const AcademyApp = () => {
                       name="gender" 
                       value="" 
                       onChange={(e) => setSelectedGender(e.target.value)}
-                      className="mr-2"
+                      className={`${isRTL ? 'ml-2' : 'mr-2'}`}
                     />
-                    أي نوع
+                    {t.common.anyGender}
                   </label>
                 </div>
               </div>
@@ -268,7 +694,7 @@ const AcademyApp = () => {
                   onClick={() => setStep(2)}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
                 >
-                  التالي - اختيار المدرس
+                  {language === 'ar' ? 'التالي - اختيار المدرس' : 'Next - Choose Teacher'}
                 </button>
               )}
             </div>
@@ -277,12 +703,12 @@ const AcademyApp = () => {
           {step === 2 && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold">اختر المدرس المناسب</h3>
+                <h3 className="text-xl font-semibold">{language === 'ar' ? 'اختر المدرس المناسب' : 'Choose the Right Teacher'}</h3>
                 <button 
                   onClick={() => setStep(1)}
                   className="text-blue-600 hover:underline"
                 >
-                  العودة
+                  {t.common.back}
                 </button>
               </div>
 
@@ -293,24 +719,24 @@ const AcademyApp = () => {
                       <div className="flex items-center gap-4">
                         <div className="text-4xl">{teacher.avatar}</div>
                         <div>
-                          <h4 className="font-semibold text-lg">{teacher.name}</h4>
-                          <p className="text-gray-600">تخصص: {teacher.subjects.join(', ')}</p>
+                          <h4 className="font-semibold text-lg">{teacher.name[language]}</h4>
+                          <p className="text-gray-600">{language === 'ar' ? 'تخصص: ' : 'Specializes in: '}{teacher.subjects.join(', ')}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <div className="flex items-center gap-1">
                               <Star className="w-4 h-4 text-yellow-400 fill-current" />
                               <span className="text-sm">{teacher.rating}</span>
                             </div>
-                            <span className="text-sm text-gray-500">({teacher.reviews} تقييم)</span>
+                            <span className="text-sm text-gray-500">({teacher.reviews} {language === 'ar' ? 'تقييم' : 'reviews'})</span>
                           </div>
                         </div>
                       </div>
-                      <div className="text-left">
-                        <div className="text-lg font-semibold text-green-600">{teacher.hourlyRate} ريال/ساعة</div>
+                      <div className={`${isRTL ? 'text-right' : 'text-left'}`}>
+                        <div className="text-lg font-semibold text-green-600">{teacher.hourlyRate} {t.common.riyal}/{t.common.hourly}</div>
                         <button 
                           onClick={() => { setSelectedTeacher(teacher); setStep(3); }}
                           className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                         >
-                          اختيار
+                          {language === 'ar' ? 'اختيار' : 'Select'}
                         </button>
                       </div>
                     </div>
@@ -323,12 +749,12 @@ const AcademyApp = () => {
           {step === 3 && selectedTeacher && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold">اختر الموعد المناسب</h3>
+                <h3 className="text-xl font-semibold">{language === 'ar' ? 'اختر الموعد المناسب' : 'Choose Suitable Time'}</h3>
                 <button 
                   onClick={() => setStep(2)}
                   className="text-blue-600 hover:underline"
                 >
-                  العودة
+                  {t.common.back}
                 </button>
               </div>
 
@@ -336,14 +762,14 @@ const AcademyApp = () => {
                 <div className="flex items-center gap-4 mb-4">
                   <div className="text-3xl">{selectedTeacher.avatar}</div>
                   <div>
-                    <h4 className="font-semibold">{selectedTeacher.name}</h4>
+                    <h4 className="font-semibold">{selectedTeacher.name[language]}</h4>
                     <p className="text-gray-600">{selectedSubject}</p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-medium mb-3">المواعيد المتاحة اليوم:</h4>
+                <h4 className="font-medium mb-3">{t.common.availableToday}:</h4>
                 <div className="grid grid-cols-3 gap-3">
                   {selectedTeacher.availableTimes.map(time => (
                     <button
@@ -351,10 +777,10 @@ const AcademyApp = () => {
                       onClick={() => {
                         const newSession = {
                           id: Date.now(),
-                          teacher: selectedTeacher.name,
+                          teacher: selectedTeacher.name[language],
                           subject: selectedSubject,
                           time: time,
-                          date: new Date().toLocaleDateString('ar-SA'),
+                          date: new Date().toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US'),
                           zoomLink: `https://zoom.us/j/${Math.random().toString().slice(2, 11)}`,
                           status: 'scheduled'
                         };
@@ -374,18 +800,18 @@ const AcademyApp = () => {
           {step === 4 && (
             <div className="text-center space-y-4">
               <div className="text-6xl text-green-500 mb-4">✅</div>
-              <h3 className="text-2xl font-bold text-green-600">تم الحجز بنجاح!</h3>
-              <p className="text-gray-600">سيتم إرسال إشعار لك قبل موعد الحصة</p>
+              <h3 className="text-2xl font-bold text-green-600">{t.common.bookingSuccess}</h3>
+              <p className="text-gray-600">{language === 'ar' ? 'سيتم إرسال إشعار لك قبل موعد الحصة' : 'You will receive a notification before the session'}</p>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p><strong>المدرس:</strong> {selectedTeacher.name}</p>
-                <p><strong>المادة:</strong> {selectedSubject}</p>
-                <p><strong>التوقيت:</strong> اليوم الساعة {bookedSessions[bookedSessions.length - 1]?.time}</p>
+                <p><strong>{t.common.teacher}:</strong> {selectedTeacher.name[language]}</p>
+                <p><strong>{t.common.subject}:</strong> {selectedSubject}</p>
+                <p><strong>{t.common.time}:</strong> {language === 'ar' ? 'اليوم الساعة' : 'Today at'} {bookedSessions[bookedSessions.length - 1]?.time}</p>
               </div>
               <button 
                 onClick={() => { setStep(1); setCurrentView('my-sessions'); }}
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
               >
-                عرض حصصي
+                {language === 'ar' ? 'عرض حصصي' : 'View My Sessions'}
               </button>
             </div>
           )}
@@ -395,20 +821,20 @@ const AcademyApp = () => {
   };
 
   const MySessionsView = () => (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-8">حصصي</h2>
+    <div className={`max-w-4xl mx-auto p-6 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <h2 className="text-3xl font-bold mb-8">{t.navigation.mySessions}</h2>
       
       <div className="space-y-4">
         {bookedSessions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold mb-2">لا توجد حصص محجوزة</h3>
-            <p className="text-gray-600 mb-4">ابدأ رحلتك التعليمية بحجز أول حصة</p>
+            <h3 className="text-xl font-semibold mb-2">{t.common.noSessions}</h3>
+            <p className="text-gray-600 mb-4">{t.common.startJourney}</p>
             <button 
               onClick={() => setCurrentView('book-session')}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
             >
-              احجز حصة
+              {t.common.book}
             </button>
           </div>
         ) : (
@@ -419,14 +845,16 @@ const AcademyApp = () => {
                   <div className="text-3xl">👨‍🏫</div>
                   <div>
                     <h3 className="font-semibold text-lg">{session.subject}</h3>
-                    <p className="text-gray-600">المدرس: {session.teacher}</p>
+                    <p className="text-gray-600">{t.common.teacher}: {session.teacher}</p>
                     <p className="text-sm text-gray-500">{session.date} - {session.time}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   {session.status === 'scheduled' && (
                     <>
-                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">مجدولة</span>
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                        {language === 'ar' ? 'مجدولة' : 'Scheduled'}
+                      </span>
                       <a
                         href={session.zoomLink}
                         target="_blank"
@@ -434,7 +862,7 @@ const AcademyApp = () => {
                         className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
                       >
                         <Video size={16} />
-                        دخول الحصة
+                        {language === 'ar' ? 'دخول الحصة' : 'Join Session'}
                       </a>
                     </>
                   )}
@@ -447,380 +875,66 @@ const AcademyApp = () => {
     </div>
   );
 
-  const TeacherDashboard = () => (
-    <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-8">لوحة تحكم المدرس</h2>
+  const StudentDashboard = () => (
+    <div className={`max-w-4xl mx-auto p-6 ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold mb-4">{t.common.welcome} {t.appName}</h2>
+        <p className="text-gray-600">{t.common.startJourney}</p>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-blue-100 p-3 rounded-full">
-              <Calendar className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الحصص اليوم</h3>
-              <p className="text-2xl font-bold text-blue-600">5</p>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl">
+          <h3 className="text-xl font-bold mb-2">{t.common.bookFirst}</h3>
+          <p className="mb-4">{t.common.chooseBest}</p>
+          <button 
+            onClick={() => setCurrentView('book-session')}
+            className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-50"
+          >
+            {t.common.bookNow}
+          </button>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-green-100 p-3 rounded-full">
-              <Users className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الطلاب النشطون</h3>
-              <p className="text-2xl font-bold text-green-600">23</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-yellow-100 p-3 rounded-full">
-              <DollarSign className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الأرباح هذا الشهر</h3>
-              <p className="text-2xl font-bold text-yellow-600">2,340 ريال</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold mb-4">جدول الحصص القادمة</h3>
-        <div className="space-y-3">
-          {[
-            { time: '09:00', student: 'أحمد سالم', subject: 'رياضيات', status: 'confirmed' },
-            { time: '11:00', student: 'فاطمة أحمد', subject: 'رياضيات', status: 'confirmed' },
-            { time: '15:00', student: 'محمد علي', subject: 'رياضيات', status: 'pending' },
-          ].map((session, index) => (
-            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-4">
-                <div className="bg-blue-100 p-2 rounded">
-                  <Clock className="w-4 h-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="font-medium">{session.time} - {session.subject}</p>
-                  <p className="text-sm text-gray-600">الطالب: {session.student}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  session.status === 'confirmed' 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {session.status === 'confirmed' ? 'مؤكدة' : 'في الانتظار'}
-                </span>
-                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center gap-1">
-                  <Video size={14} />
-                  بدء الحصة
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const AdminDashboard = () => (
-    <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-8">لوحة تحكم الإدارة</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-blue-100 p-3 rounded-full">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">إجمالي الطلاب</h3>
-              <p className="text-2xl font-bold text-blue-600">1,234</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-green-100 p-3 rounded-full">
-              <BookOpen className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">المدرسين النشطين</h3>
-              <p className="text-2xl font-bold text-green-600">87</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-purple-100 p-3 rounded-full">
-              <Calendar className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الحصص اليوم</h3>
-              <p className="text-2xl font-bold text-purple-600">156</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-yellow-100 p-3 rounded-full">
-              <DollarSign className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الإيرادات الشهرية</h3>
-              <p className="text-2xl font-bold text-yellow-600">45,680 ريال</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold mb-4">أحدث التسجيلات</h3>
-          <div className="space-y-3">
-            {[
-              { name: 'سارة محمد', type: 'طالبة', time: 'منذ دقيقتين' },
-              { name: 'أحمد علي', type: 'مدرس', time: 'منذ 5 دقائق' },
-              { name: 'فاطمة سالم', type: 'ولي أمر', time: 'منذ 10 دقائق' }
-            ].map((user, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User size={16} />
-                  </div>
-                  <div>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-gray-600">{user.type}</p>
-                  </div>
-                </div>
-                <span className="text-sm text-gray-500">{user.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold mb-4">الحصص الأكثر طلباً</h3>
-          <div className="space-y-3">
-            {[
-              { subject: 'رياضيات', sessions: 45, color: 'blue' },
-              { subject: 'فيزياء', sessions: 32, color: 'green' },
-              { subject: 'كيمياء', sessions: 28, color: 'purple' },
-              { subject: 'أحياء', sessions: 24, color: 'yellow' }
-            ].map((item, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span className="font-medium">{item.subject}</span>
-                <div className="flex items-center gap-2">
-                  <div className={`w-20 h-2 bg-gray-200 rounded-full overflow-hidden`}>
-                    <div className={`h-full bg-${item.color}-500`} style={{width: `${(item.sessions/45)*100}%`}}></div>
-                  </div>
-                  <span className="text-sm text-gray-600">{item.sessions}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const ParentDashboard = () => (
-    <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-8">لوحة تحكم ولي الأمر</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-blue-100 p-3 rounded-full">
-              <User className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الأطفال المسجلين</h3>
-              <p className="text-2xl font-bold text-blue-600">2</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-green-100 p-3 rounded-full">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الحصص المكتملة</h3>
-              <p className="text-2xl font-bold text-green-600">28</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-yellow-100 p-3 rounded-full">
-              <DollarSign className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold">الحساب الحالي</h3>
-              <p className="text-2xl font-bold text-yellow-600">1,240 ريال</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold mb-4">أداء الأطفال</h3>
-          <div className="space-y-4">
-            {[
-              { name: 'أحمد سالم', grade: 'الصف الثاني الثانوي', attendance: 95, progress: 'ممتاز' },
-              { name: 'فاطمة سالم', grade: 'الصف الأول الثانوي', attendance: 88, progress: 'جيد جداً' }
-            ].map((child, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h4 className="font-semibold">{child.name}</h4>
-                    <p className="text-sm text-gray-600">{child.grade}</p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-                    child.progress === 'ممتاز' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {child.progress}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm">نسبة الحضور</span>
-                      <span className="text-sm font-medium">{child.attendance}%</span>
-                    </div>
-                    <div className="w-full h-2 bg-gray-200 rounded-full">
-                      <div className="h-2 bg-green-500 rounded-full" style={{width: `${child.attendance}%`}}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold mb-4">الحصص القادمة</h3>
-          <div className="space-y-3">
-            {[
-              { student: 'أحمد سالم', subject: 'رياضيات', time: '15:00', teacher: 'أحمد محمد' },
-              { student: 'فاطمة سالم', subject: 'فيزياء', time: '17:00', teacher: 'فاطمة علي' },
-              { student: 'أحمد سالم', subject: 'كيمياء', time: '19:00', teacher: 'محمد سالم' }
-            ].map((session, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="font-medium">{session.student} - {session.subject}</p>
-                  <p className="text-sm text-gray-600">المدرس: {session.teacher}</p>
-                </div>
-                <div className="text-left">
-                  <p className="font-medium text-blue-600">{session.time}</p>
-                  <button className="text-sm text-blue-600 hover:underline">
-                    رابط الحصة
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const BillingView = () => (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-8">الحساب والفواتير</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-center">
-            <h3 className="font-semibold mb-2">الرصيد الحالي</h3>
-            <p className="text-3xl font-bold text-green-600">850 ريال</p>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-center">
-            <h3 className="font-semibold mb-2">إجمالي هذا الشهر</h3>
-            <p className="text-3xl font-bold text-blue-600">1,240 ريال</p>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-center">
-            <h3 className="font-semibold mb-2">الحصص المكتملة</h3>
-            <p className="text-3xl font-bold text-purple-600">28 حصة</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold">إضافة رصيد</h3>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-          {[100, 250, 500, 1000].map(amount => (
-            <button
-              key={amount}
-              className="p-4 border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors text-center"
-            >
-              <div className="text-lg font-bold">{amount} ريال</div>
-            </button>
-          ))}
-        </div>
-        
-        <div className="flex gap-4">
-          <input
-            type="number"
-            placeholder="مبلغ آخر"
-            className="flex-1 p-3 border rounded-lg"
-          />
-          <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
-            إضافة رصيد
+        <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl">
+          <h3 className="text-xl font-bold mb-2">{t.common.trackProgress}</h3>
+          <p className="mb-4">{t.common.monitorPerformance}</p>
+          <button 
+            onClick={() => setCurrentView('progress')}
+            className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-50"
+          >
+            {language === 'ar' ? 'عرض التقدم' : 'View Progress'}
           </button>
         </div>
       </div>
-
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold mb-4">سجل المعاملات</h3>
-        <div className="space-y-3">
-          {[
-            { date: '2025-09-26', description: 'حصة رياضيات - أحمد محمد', amount: -50, type: 'payment' },
-            { date: '2025-09-26', description: 'إضافة رصيد', amount: +500, type: 'deposit' },
-            { date: '2025-09-25', description: 'حصة فيزياء - فاطمة علي', amount: -45, type: 'payment' },
-            { date: '2025-09-25', description: 'حصة كيمياء - محمد سالم', amount: -55, type: 'payment' }
-          ].map((transaction, index) => (
-            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-              <div>
-                <p className="font-medium">{transaction.description}</p>
-                <p className="text-sm text-gray-500">{transaction.date}</p>
+      
+      {bookedSessions.length > 0 && (
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-semibold mb-4">{t.common.upcomingSessions}</h3>
+          <div className="space-y-3">
+            {bookedSessions.slice(0, 3).map(session => (
+              <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Clock className="text-blue-500" size={20} />
+                  <div>
+                    <p className="font-medium">{session.subject}</p>
+                    <p className="text-sm text-gray-600">{session.date} - {session.time}</p>
+                  </div>
+                </div>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center gap-1">
+                  <Video size={14} />
+                  {language === 'ar' ? 'انضم' : 'Join'}
+                </button>
               </div>
-              <div className={`font-bold ${
-                transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {transaction.amount > 0 ? '+' : ''}{transaction.amount} ريال
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 
   const NotificationCenter = () => (
-    <div className="fixed top-16 right-4 w-80 bg-white rounded-lg shadow-xl border z-50 max-h-96 overflow-y-auto">
+    <div className={`fixed top-16 ${isRTL ? 'left-4' : 'right-4'} w-80 bg-white rounded-lg shadow-xl border z-50 max-h-96 overflow-y-auto ${isRTL ? 'font-arabic' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="p-4 border-b">
-        <h3 className="font-semibold">الإشعارات</h3>
+        <h3 className="font-semibold">{t.navigation.notifications}</h3>
       </div>
       <div className="space-y-2 p-4">
         {notifications.map(notification => (
@@ -837,174 +951,10 @@ const AcademyApp = () => {
           </div>
         ))}
         {notifications.length === 0 && (
-          <p className="text-center text-gray-500 py-4">لا توجد إشعارات جديدة</p>
+          <p className="text-center text-gray-500 py-4">
+            {language === 'ar' ? 'لا توجد إشعارات جديدة' : 'No new notifications'}
+          </p>
         )}
       </div>
     </div>
   );
-
-  const renderMainContent = () => {
-    switch (currentView) {
-      case 'home':
-        if (userType === 'student') {
-          return (
-            <div className="max-w-4xl mx-auto p-6">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold mb-4">مرحباً بك في أكاديمية أستاذ أونلاين</h2>
-                <p className="text-gray-600">ابدأ رحلتك التعليمية مع أفضل المدرسين</p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-2">احجز حصتك الأولى</h3>
-                  <p className="mb-4">اختر من بين أفضل المدرسين المتخصصين</p>
-                  <button 
-                    onClick={() => setCurrentView('book-session')}
-                    className="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-50"
-                  >
-                    احجز الآن
-                  </button>
-                </div>
-                
-                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl">
-                  <h3 className="text-xl font-bold mb-2">تابع تقدمك</h3>
-                  <p className="mb-4">راقب أداءك ونسبة حضورك</p>
-                  <button 
-                    onClick={() => setCurrentView('progress')}
-                    className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-50"
-                  >
-                    عرض التقدم
-                  </button>
-                </div>
-              </div>
-              
-              {bookedSessions.length > 0 && (
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                  <h3 className="text-xl font-semibold mb-4">الحصص القادمة</h3>
-                  <div className="space-y-3">
-                    {bookedSessions.slice(0, 3).map(session => (
-                      <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <Clock className="text-blue-500" size={20} />
-                          <div>
-                            <p className="font-medium">{session.subject}</p>
-                            <p className="text-sm text-gray-600">{session.date} - {session.time}</p>
-                          </div>
-                        </div>
-                        <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center gap-1">
-                          <Video size={14} />
-                          انضم
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        } else if (userType === 'parent') {
-          return <ParentDashboard />;
-        } else if (userType === 'teacher') {
-          return <TeacherDashboard />;
-        } else if (userType === 'admin') {
-          return <AdminDashboard />;
-        }
-        break;
-      case 'book-session':
-        return <BookSessionView />;
-      case 'my-sessions':
-        return <MySessionsView />;
-      case 'billing':
-        return <BillingView />;
-      case 'progress':
-        return (
-          <div className="max-w-4xl mx-auto p-6">
-            <h2 className="text-3xl font-bold mb-8">تقرير التقدم</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-4xl mb-2">📊</div>
-                <h3 className="font-semibold">نسبة الحضور</h3>
-                <p className="text-2xl font-bold text-green-600">94%</p>
-              </div>
-              
-              <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-4xl mb-2">⭐</div>
-                <h3 className="font-semibold">متوسط الدرجات</h3>
-                <p className="text-2xl font-bold text-blue-600">85%</p>
-              </div>
-              
-              <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-4xl mb-2">🎯</div>
-                <h3 className="font-semibold">المستوى العام</h3>
-                <p className="text-2xl font-bold text-purple-600">ممتاز</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-semibold mb-4">الأداء بالمواد</h3>
-              <div className="space-y-4">
-                {[
-                  { subject: 'رياضيات', score: 88, trend: 'up', sessions: 12 },
-                  { subject: 'فيزياء', score: 82, trend: 'up', sessions: 8 },
-                  { subject: 'كيمياء', score: 85, trend: 'stable', sessions: 6 },
-                  { subject: 'أحياء', score: 90, trend: 'up', sessions: 4 }
-                ].map((subject, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <BookOpen className="text-blue-600" size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">{subject.subject}</h4>
-                        <p className="text-sm text-gray-600">{subject.sessions} حصة</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-lg">{subject.score}%</span>
-                        <span className={`text-sm ${
-                          subject.trend === 'up' ? 'text-green-500' : 
-                          subject.trend === 'down' ? 'text-red-500' : 'text-gray-500'
-                        }`}>
-                          {subject.trend === 'up' ? '↗️' : subject.trend === 'down' ? '↘️' : '➡️'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <div className="max-w-4xl mx-auto p-6">
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🚧</div>
-              <h2 className="text-2xl font-bold mb-2">قيد التطوير</h2>
-              <p className="text-gray-600">هذا القسم قيد التطوير وسيكون متاحاً قريباً</p>
-            </div>
-          </div>
-        );
-    }
-  };
-
-  if (currentView === 'login' || !userType) {
-    return <LoginScreen />;
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <Navigation />
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1">
-          {renderMainContent()}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default AcademyApp;
